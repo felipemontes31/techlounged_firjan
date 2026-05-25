@@ -2,9 +2,13 @@
 
 session_start();
 
+require_once("../../utils/response.php");
+
 session_destroy();
 
-header("Location: ../../views/login.php");
-exit;
+redirecionarPagina(
+    "Logout realizado com sucesso.",
+    "/techlounged/views/login.php"
+);
 
 ?>
