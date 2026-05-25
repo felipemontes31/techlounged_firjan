@@ -1,0 +1,11 @@
+<form action="../services/auth/login.php" method="POST">
+
+    <input type="email" name="email" placeholder="Email">
+
+    <input type="password" name="senha" placeholder="Senha">
+
+    <button type="submit">
+        Entrar
+    </button>
+
+</form>
