@@ -4,120 +4,54 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login de Usuário</title>
-  <style>
-     
-    
-    /* login */
-     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #4a148c, #6a1b9a);
-      height: 100vh;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .login-container {
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      width: 350px;
-      text-align: center;
-    }
-
-    .login-container h2 {
-      margin-bottom: 20px;
-      color: #4a148c;
-    }
-
-    .login-container input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-
-    .login-container button {
-      width: 100%;
-      padding: 12px;
-      background-color: #4a148c;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .login-container button:hover {
-      background-color: #6a1b9a;
-    }
-
-    .login-container a {
-      display: block;
-      margin-top: 15px;
-      font-size: 14px;
-      color: #4a148c;
-      text-decoration: none;
-    }
-
-    .login-container a:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <link rel="stylesheet" href="../style.css">
 </head>
 <body>
+
   <div class="login-container">
-    <h2>Login</h2>
-   <form action="../services/auth/login.php" method="POST">
+    <div class="login-card">
+      
+      <h2>Login</h2>
+      <p>Insira suas credenciais para acessar o sistema.</p>
+      
+      <div id="errorMsg" style="color: #d32f2f; margin-bottom: 15px; font-size: 14px; font-weight: bold; text-align: center;"></div>
 
-    <input type="email" name="email" placeholder="Email">
+      <form action="../services/auth/login.php" method="POST" id="loginForm" class="login-form">
+        
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" placeholder="Email" required autocomplete="email">
+        </div>
 
-    <input type="password" name="senha" placeholder="Senha">
+        <div class="form-group">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" name="senha" placeholder="Senha" required autocomplete="current-password">
+        </div>
 
     <button type="submit">
         Entrar
     </button>
 
-    <div class="d-flex justify-content-between mt-4">
-   
-    <button type="submit" class="btn btn-success" >
-        Cadastrar Usuário
-    </button>
-
-     <a href="techlounged_firjan/index.php" class="btn btn-secondary">
-        ← Voltar
-    </a>
-</div> 
-
 </form>
   </div>
 
   <script>
-    // Exemplo simples de validação
     const loginForm = document.getElementById('loginForm');
     const errorMsg = document.getElementById('errorMsg');
 
     loginForm.addEventListener('submit', function(event) {
-      event.preventDefault(); // evita recarregar a página
+      // Pegando os valores corretos pelos IDs ajustados
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value.trim();
 
-      const usuario = document.getElementById('usuario').value;
-      const senha = document.getElementById('senha').value;
-
-      // Aqui você define os usuários válidos
-      const usuarioCorreto = "admin";
-      const senhaCorreta = "12345";
-
-      if (usuario === usuarioCorreto && senha === senhaCorreta) {
-        // Redireciona para a página de atividades
-        window.location.href = "atividades.html";
-      } else {
-        errorMsg.textContent = "Usuário ou senha incorretos!";
+      // Validação simples no Front-end antes de enviar ao PHP
+      if (email === "" || senha === "") {
+        event.preventDefault(); // Impede o envio se houver campo vazio
+        errorMsg.textContent = "Por favor, preencha todos os campos!";
+        return;
       }
+
+     
     });
   </script>
 </body>
