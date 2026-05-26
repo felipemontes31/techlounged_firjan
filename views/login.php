@@ -32,6 +32,18 @@
         Entrar
     </button>
 
+ <div class="d-flex justify-content-between mt-4">
+   
+    <button type="submit" class="btn btn-success" >
+        Cadastrar Usuário
+    </button>
+
+     <a href="techlounged_firjan/index.php" class="btn btn-secondary">
+        ← Voltar
+    </a>
+</div> 
+
+
 </form>
   </div>
 
