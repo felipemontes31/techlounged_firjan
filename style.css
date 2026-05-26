@@ -1,27 +1,25 @@
 /* ==========================================================================
-   1. VARIÁVEIS GLOBAIS (Design System)
+   1. VARIÁVEIS GLOBAIS (Design System - Identidade Firjan Sapucaí)
    ========================================================================== */
 :root {
-  /* Cores Principais (Mantendo sua identidade) */
-  --primary-color: #6d9eba;
-  --primary-hover: #5986a1;
-  --secondary-color: #4a148c;
-  --secondary-hover: #6a1b9a;
-  --accent-color: #e1bee7;
+  /* [PALETA DE CORES CORPORATIVA] */
+  --blue-institutional: #004B87; /* Identidade fundamental, barra de títulos (header) e botões mestres */
+  --blue-dynamic: #0072CE;       /* Chaves secundárias, links operacionais ativos, hover de botões */
+  --blue-ice-accent: #E2EBF4;    /* Realce de destaques e fundo de elementos dinâmicos (hover da login-btn) */
+  --gray-slate: #708090;         /* Delimitações físicas, bordas estruturais e grades secundárias */
+  --gray-admin: #F4F5F7;         /* Fundo global e alternância (Zebra styling) para evitar fadiga visual */
   
-  /* Cores Neutras */
-  --bg-global: #f8f9fa;
+  /* Estados de Elementos */
   --bg-card: #ffffff;
-  --text-main: #333333;
-  --text-muted: #555555;
-  --border-color: #cccccc;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-
-  /* Tipografia e Raio */
-  --font-stack: Arial, sans-serif;
-  --radius: 8px;
-  --transition: all 0.3s ease-in-out;
+  --text-main: #202529;          /* Grafite escuro para melhor contraste e legibilidade */
+  --text-muted: #535c68;
+  
+  /* Estrutura */
+  --font-stack: 'Segoe UI', Arial, sans-serif; /* Fonte corporativa mais moderna */
+  --radius: 6px;                 /* Cantos levemente mais retos, padrão de sistemas corporativos */
+  --transition: all 0.25s ease-in-out;
+  --shadow-sm: 0 2px 4px rgba(0, 75, 135, 0.08);
+  --shadow: 0 4px 12px rgba(0, 75, 135, 0.12);
 }
 
 /* ==========================================================================
@@ -35,7 +33,7 @@
 
 body {
   font-family: var(--font-stack);
-  background-color: var(--bg-global);
+  background-color: var(--gray-admin); /* Cinza Administrativo como fundo de tela */
   color: var(--text-main);
   line-height: 1.6;
 }
@@ -44,37 +42,42 @@ body {
    3. HEADER / NAVEGAÇÃO (Página Principal)
    ========================================================================== */
 header {
-  background-color: var(--primary-color);
+  background-color: var(--blue-institutional); /* Azul Institucional Fundamental */
   color: white;
-  padding: 20px;
+  padding: 18px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-shadow: var(--shadow-sm);
+  border-bottom: 3px solid var(--blue-dynamic); /* Divisão dinâmica */
 }
 
 header h1 {
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
 }
 
 .login-btn {
-  background-color: white;
-  color: var(--primary-color);
-  padding: 10px 20px;
+  background-color: transparent;
+  color: white;
+  padding: 8px 20px;
   border-radius: var(--radius);
   text-decoration: none;
   font-weight: bold;
+  border: 2px solid white;
   transition: var(--transition);
 }
 
 .login-btn:hover {
-  background-color: var(--accent-color);
-  color: var(--secondary-color);
+  background-color: var(--blue-ice-accent); /* Destaque condicional suave */
+  color: var(--blue-institutional);
+  border-color: var(--blue-ice-accent);
 }
 
 /* ==========================================================================
-   4. BARRA DE BUSCA (Página Principal)
+   4. BARRA DE BUSCA E FILTROS (Página Principal)
    ========================================================================== */
 .search-bar {
   background-color: var(--bg-card);
@@ -84,27 +87,30 @@ header h1 {
   justify-content: center;
   flex-wrap: wrap;
   box-shadow: var(--shadow-sm);
+  border-bottom: 1px solid var(--gray-slate); /* Delimitação física industrial */
 }
 
 .search-bar input, 
 .search-bar select {
-  padding: 12px;
-  border: 1px solid var(--border-color);
+  padding: 10px 14px;
+  border: 1px solid var(--gray-slate); /* Borda em cinza slate */
   border-radius: var(--radius);
   font-size: 14px;
+  background-color: #ffffff;
+  color: var(--text-main);
   outline: none;
   transition: var(--transition);
 }
 
 .search-bar input:focus, 
 .search-bar select:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(109, 158, 186, 0.2);
+  border-color: var(--blue-dynamic); /* Links operacionais e focos ativos */
+  box-shadow: 0 0 0 3px rgba(0, 114, 206, 0.15);
 }
 
 .search-bar button {
-  padding: 12px 24px;
-  background-color: var(--primary-color);
+  padding: 10px 24px;
+  background-color: var(--blue-institutional); /* Botão Mestre */
   color: white;
   border: none;
   border-radius: var(--radius);
@@ -114,11 +120,11 @@ header h1 {
 }
 
 .search-bar button:hover {
-  background-color: var(--secondary-hover);
+  background-color: var(--blue-dynamic); /* Azul Dinâmico Operacional */
 }
 
 /* ==========================================================================
-   5. COMPONENTE: CARROSSEL & CARDS (Página Principal)
+   5. COMPONENTE: CARROSSEL & CARDS
    ========================================================================== */
 .carousel {
   position: relative;
@@ -126,6 +132,7 @@ header h1 {
   margin: 40px auto;
   overflow: hidden;
   border-radius: var(--radius);
+  border: 1px solid var(--gray-slate); /* Delimitação externa estrutural */
   box-shadow: var(--shadow);
 }
 
@@ -140,6 +147,11 @@ header h1 {
   overflow: hidden;
 }
 
+/* Aplicação de Zebra Styling intercalado se necessário em listas ou cards futuros */
+.card:nth-child(even) .card-content {
+  background-color: var(--gray-admin); /* Evita fadiga visual */
+}
+
 .card img {
   width: 100%;
   height: 400px;
@@ -148,41 +160,43 @@ header h1 {
 
 .card-content {
   padding: 24px;
+  background-color: var(--bg-card);
 }
 
 .card-content h2 {
-  font-size: 24px;
-  margin-bottom: 12px;
-  color: var(--text-main);
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: var(--blue-institutional); /* Governança institucional no título */
 }
 
 .card-content p {
-  font-size: 16px;
+  font-size: 15px;
   color: var(--text-muted);
   margin: 8px 0;
 }
 
 .card-content .date {
   font-weight: bold;
-  color: var(--secondary-color);
+  color: var(--blue-dynamic); /* Azul Dinâmico para fluxos de dados/prazos */
+  font-size: 14px;
 }
 
-/* Botões padrões do Card */
+/* Botão Mestre de Ação do Card */
 .btn {
   display: inline-block;
   margin-top: 12px;
-  padding: 12px 24px;
-  background-color: var(--secondary-color);
+  padding: 10px 22px;
+  background-color: var(--blue-institutional); /* Botão Mestre */
   color: white;
   text-decoration: none;
   border-radius: var(--radius);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
   transition: var(--transition);
 }
 
 .btn:hover {
-  background-color: var(--secondary-hover);
+  background-color: var(--blue-dynamic);
 }
 
 /* Setas do Carrossel */
@@ -190,12 +204,12 @@ header h1 {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(74, 20, 140, 0.7);
+  background-color: rgba(0, 75, 135, 0.75); /* Baseado no azul institucional */
   border: none;
   color: white;
-  font-size: 24px;
-  width: 50px;
-  height: 50px;
+  font-size: 20px;
+  width: 44px;
+  height: 44px;
   cursor: pointer;
   border-radius: 50%;
   display: flex;
@@ -208,14 +222,14 @@ header h1 {
 .carousel-button.right { right: 15px; }
 
 .carousel-button:hover {
-  background-color: rgba(106, 27, 154, 0.9);
+  background-color: var(--blue-dynamic);
 }
 
 /* ==========================================================================
-   6. TELA DE LOGIN (Novos estilos integrados)
+   6. TELA DE LOGIN
    ========================================================================== */
 .login-container {
-  min-height: calc(100vh - 80px); /* Desconta o tamanho do header */
+  min-height: calc(100vh - 80px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -226,45 +240,46 @@ header h1 {
   background-color: var(--bg-card);
   padding: 40px;
   border-radius: var(--radius);
+  border: 1px solid var(--gray-slate); /* Borda cinza estrutural */
   box-shadow: var(--shadow);
   max-width: 400px;
   width: 100%;
-  text-align: center;
 }
 
 .login-card h2 {
-  color: var(--secondary-color);
+  color: var(--blue-institutional);
   margin-bottom: 8px;
+  text-align: center;
 }
 
 .login-card p {
   color: var(--text-muted);
   font-size: 14px;
   margin-bottom: 24px;
+  text-align: center;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  text-align: left;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .form-group label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
-  color: var(--text-main);
+  color: var(--blue-institutional);
 }
 
 .form-group input {
-  padding: 12px;
-  border: 1px solid var(--border-color);
+  padding: 11px;
+  border: 1px solid var(--gray-slate);
   border-radius: var(--radius);
   font-size: 14px;
   outline: none;
@@ -272,14 +287,14 @@ header h1 {
 }
 
 .form-group input:focus {
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 0 2px rgba(74, 20, 140, 0.2);
+  border-color: var(--blue-dynamic);
+  box-shadow: 0 0 0 3px rgba(0, 114, 206, 0.15);
 }
 
 .btn-submit {
   width: 100%;
-  padding: 14px;
-  background-color: var(--secondary-color);
+  padding: 12px;
+  background-color: var(--blue-institutional); /* Botão Mestre */
   color: white;
   border: none;
   border-radius: var(--radius);
@@ -290,17 +305,18 @@ header h1 {
 }
 
 .btn-submit:hover {
-  background-color: var(--secondary-hover);
+  background-color: var(--blue-dynamic);
 }
 
 /* ==========================================================================
-   7. RESPONSIVIDADE (Media Queries)
+   7. RESPONSIVIDADE
    ========================================================================== */
 @media (max-width: 600px) {
   header {
     flex-direction: column;
     gap: 15px;
     text-align: center;
+    padding: 15px;
   }
   
   .search-bar {
@@ -312,6 +328,6 @@ header h1 {
   }
 
   .card img {
-    height: 250px; /* Diminui a imagem no mobile */
+    height: 220px;
   }
 }
