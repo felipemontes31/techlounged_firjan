@@ -1,3 +1,4 @@
+<?php require_once("../config/app.php"); ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -17,7 +18,7 @@
                 </div>
                 <div class="card-body">
                     
-                    <form action="../services/auth/register.php" method="POST">
+                    <form action="<?= BASE_URL ?>/services/auth/cadastrar.php" method="POST">
                         
                         <div class="mb-3">
                             <label for="nome" class="form-label">Nome Completo</label>
@@ -32,16 +33,6 @@
                         <div class="mb-3">
                             <label for="senha" class="form-label">Senha</label>
                             <input type="password" class="form-control" id="senha" name="senha" placeholder="Digite uma senha segura" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="id_funcao" class="form-label">Função / Cargo</label>
-                            <select class="form-control" id="id_funcao" name="id_funcao" required>
-                                <option value="" disabled selected>Selecione uma função</option>
-                                <option value="1">Administrador</option>
-                                <option value="2">Operador</option>
-                                <option value="3">Suporte</option>
-                            </select>
                         </div>
 
                         <div class="d-grid gap-2">

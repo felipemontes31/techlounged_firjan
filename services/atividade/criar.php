@@ -1,8 +1,8 @@
 <?php
 
-require_once("../../config/conexao.php");
-require_once("../../utils/json.php");
-require_once("../../middleware/permissao.php");
+require_once(__DIR__ ."/../../config/conexao.php");
+require_once(__DIR__ ."/../../utils/json.php");
+require_once(__DIR__ ."/../../middleware/permissao.php");
 
 verificarPermissao([
     "Administrador",
