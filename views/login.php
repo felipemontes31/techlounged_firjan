@@ -36,7 +36,7 @@
         </div>
 
         <hr> <div class="d-flex justify-content-between mt-3">
-          <a href="registros.php" class="btn btn-success">
+          <a href="cadastro.php" class="btn btn-success">
               Cadastrar Usuário
           </a>
 
