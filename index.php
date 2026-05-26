@@ -4,160 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eventos - Midiateca - Firjan - Sapucai</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f8f9fa;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background-color: #6d9eba;
-      color: white;
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header h1 {
-      margin: 0;
-    }
-
-    .login-btn {
-      background-color: white;
-      color: #6d9eba;
-      padding: 10px 15px;
-      border-radius: 4px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .login-btn:hover {
-      background-color: #e1bee7;
-    }
-
-    .search-bar {
-      background-color: #fff;
-      padding: 15px;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .search-bar input, .search-bar select {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-
-    .search-bar button {
-      padding: 10px 15px;
-      background-color: #6d9eba;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .search-bar button:hover {
-      background-color: #6a1b9a;
-    }
-
-    /* Carrossel */
-    .carousel {
-      position: relative;
-      max-width: 1000px;
-      margin: 40px auto;
-      overflow: hidden;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-
-    .carousel-track {
-      display: flex;
-      transition: transform 0.5s ease-in-out;
-    }
-
-    .card {
-      min-width: 100%;
-      box-sizing: border-box;
-      background-color: white;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .card img {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-    }
-
-    .card-content {
-      padding: 20px;
-    }
-
-    .card-content h2 {
-      font-size: 24px;
-      margin: 0 0 10px;
-      color: #333;
-    }
-
-    .card-content p {
-      font-size: 16px;
-      color: #555;
-      margin: 5px 0;
-    }
-
-    .card-content .date {
-      font-weight: bold;
-      color: #4a148c;
-    }
-
-    .btn {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 12px 20px;
-      background-color: #4a148c;
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-
-    .btn:hover {
-      background-color: #6a1b9a;
-    }
-
-    .carousel-button {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: rgba(74,20,140,0.7);
-      border: none;
-      color: white;
-      font-size: 30px;
-      padding: 10px;
-      cursor: pointer;
-      border-radius: 50%;
-    }
-
-    .carousel-button.left {
-      left: 15px;
-    }
-
-    .carousel-button.right {
-      right: 15px;
-    }
-
-    .carousel-button:hover {
-      background-color: rgba(106,27,154,0.9);
-    }
-  </style>
+  <link rel = "steelheet" href="techlounged_firjan/style.css">
 </head>
 <body>
   <header>
@@ -167,15 +14,17 @@
 
   <div class="search-bar">
     <input type="text" placeholder="Buscar eventos...">
+    
     <select>
       <option value="">Categoria</option>
       <option value="musica">Música</option>
       <option value="teatro">Teatro</option>
       <option value="tecnologia">Tecnologia</option>
       <option value="gastronomia">Gastronomia</option>
-    </select>
+    </select> 
+    
     <select>
-      <option value="">Localização</option>
+      <option value="">Espaço</option>
       <option value="miateca">Midiateca</option>
       <option value="auditorio">Auditório</option>
       <option value="online">Online</option>
