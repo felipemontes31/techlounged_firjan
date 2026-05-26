@@ -36,11 +36,11 @@
         </div>
 
         <hr> <div class="d-flex justify-content-between mt-3">
-          <a href="techlounged_firjan/views/cadastro.php" class="btn btn-success">
+          <a href="cadastro.php" class="btn btn-success">
               Cadastrar Usuário
           </a>
 
-          <a href="techlounged_firjan/index.php" class="btn btn-secondary">
+          <a href="../index.php" class="btn btn-secondary">
               ← Voltar
           </a>
         </div> 
