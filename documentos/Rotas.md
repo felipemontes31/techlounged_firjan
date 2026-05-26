@@ -4,8 +4,9 @@
 
 ?acao=listar → Lista todos (admin apenas)
 ?acao=buscar&id=ID → Busca por ID (admin ou próprio usuário)
-?acao=login (POST) → Login
-?acao=cadastrar (POST) → Cadastro
+?acao=criar (POST) → Criar Usuário (admin apenas)
+?acao=editar (POST) → Editar Usuário (admin apenas)
+?acao=excluir (POST) → Excluir Usuário (admin apenas)
 
 ### 2. Registros de Atividade (/services/registro_atividade_controle.php)
 
