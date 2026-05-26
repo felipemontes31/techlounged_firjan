@@ -17,7 +17,7 @@
                 </div>
                 <div class="card-body">
                     
-                    <form action="techlounged_firjan/services/auth/register.php" method="POST">
+                    <form action="../services/auth/register.php" method="POST">
                         
                         <div class="mb-3">
                             <label for="nome" class="form-label">Nome Completo</label>
@@ -46,7 +46,7 @@
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">Cadastrar Usuário</button>
-                            <a href="/techlounged/views/usuarios.php" class="btn btn-outline-secondary">Cancelar</a>
+                            <a href="usuarios.php" class="btn btn-outline-secondary">Cancelar</a>
                         </div>
 
                     </form>
