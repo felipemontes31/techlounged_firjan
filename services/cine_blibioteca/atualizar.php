@@ -1,45 +1,45 @@
 <?php
 
-require_once("../../middleware/permissao.php");
-require_once("../../config/conexao.php");
-require_once("../../utils/response.php");
+require_once(__DIR__ . "/../../middleware/auth.php");
+require_once(__DIR__ . "/../../config/conexao.php");
+require_once(__DIR__ . "/../../utils/json.php");
 
-verificarPermissao([
-    "Administrador",
-    "Bibliotecário"
-]);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    respostaJSON(false, "Método inválido.");
+}
 
-$id = intval($_POST['id'] ?? 0);
+$id = $_POST['id'] ?? null;
 
 $titulo_curta = trim($_POST['titulo_curta'] ?? '');
-
 $link = trim($_POST['link'] ?? '');
-
 $detalhes_controle = trim($_POST['detalhes_controle'] ?? '');
-
-$usuario = $_SESSION['usuario']['id'];
 
 if (
     empty($id) ||
     empty($titulo_curta)
 ) {
-
-    redirecionarPagina(
-        "Preencha os campos obrigatórios.",
-        "/techlounged/views/cine_biblioteca.php"
-    );
+    respostaJSON(false, "Dados inválidos.");
 }
 
+$id_usuario = $_SESSION['usuario']['id'];
+
 $sql = "
-UPDATE cine_biblioteca
+UPDATE cine_biblioteca cb
+
+INNER JOIN registro_atividade ra
+    ON ra.id = cb.id_registro_atividade
+
+INNER JOIN atividade a
+    ON a.id = ra.id_atividade
+
 SET
+    cb.titulo_curta = ?,
+    cb.link = ?,
+    cb.detalhes_controle = ?,
+    cb.atualizado_por = ?
 
-    titulo_curta = ?,
-    link = ?,
-    detalhes_controle = ?,
-    atualizado_por = ?
-
-WHERE id = ?
+WHERE cb.id = ?
+AND a.nome_projeto = 'Cine Biblioteca'
 ";
 
 $stmt = $conexao->prepare($sql);
@@ -49,21 +49,24 @@ $stmt->bind_param(
     $titulo_curta,
     $link,
     $detalhes_controle,
-    $usuario,
+    $id_usuario,
     $id
 );
 
-if (!$stmt->execute()) {
+if ($stmt->execute()) {
 
-    redirecionarPagina(
-        "Erro ao atualizar.",
-        "/techlounged/views/cine_biblioteca.php"
-    );
+    if ($stmt->affected_rows > 0) {
+
+        respostaJSON(
+            true,
+            "Registro atualizado com sucesso."
+        );
+    }
 }
 
-redirecionarPagina(
-    "Atualizado com sucesso.",
-    "/techlounged/views/cine_biblioteca.php"
+respostaJSON(
+    false,
+    "Registro não encontrado ou não alterado."
 );
 
 ?>

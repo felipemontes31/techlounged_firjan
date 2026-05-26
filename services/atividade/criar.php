@@ -1,7 +1,5 @@
 <?php
 
-session_start();
-
 require_once("../../config/conexao.php");
 require_once("../../utils/json.php");
 require_once("../../middleware/permissao.php");

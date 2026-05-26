@@ -12,17 +12,11 @@ if (empty($id)) {
 
 $sql = "
 SELECT
-    cb.*
-FROM cine_biblioteca cb
-
-INNER JOIN registro_atividade ra
-    ON ra.id = cb.id_registro_atividade
-
-INNER JOIN atividade a
-    ON a.id = ra.id_atividade
-
-WHERE cb.id = ?
-AND a.nome_projeto = 'Cine Biblioteca'
+    id,
+    nome_funcao,
+    descricao
+FROM funcao
+WHERE id = ?
 ";
 
 $stmt = $conexao->prepare($sql);
@@ -34,14 +28,14 @@ $stmt->execute();
 $resultado = $stmt->get_result();
 
 if ($resultado->num_rows === 0) {
-    respostaJSON(false, "Registro não encontrado.");
+    respostaJSON(false, "Função não encontrada.");
 }
 
 $dados = $resultado->fetch_assoc();
 
 respostaJSON(
     true,
-    "Registro encontrado.",
+    "Função encontrada.",
     $dados
 );
 

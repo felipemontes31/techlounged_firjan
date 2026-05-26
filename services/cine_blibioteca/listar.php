@@ -1,40 +1,26 @@
 <?php
 
-require_once("../../middleware/auth.php");
-require_once("../../config/conexao.php");
-
-header("Content-Type: application/json");
+require_once(__DIR__ . "/../../middleware/auth.php");
+require_once(__DIR__ . "/../../config/conexao.php");
+require_once(__DIR__ . "/../../utils/json.php");
 
 $sql = "
 SELECT
-
     cb.id,
     cb.titulo_curta,
     cb.link,
     cb.detalhes_controle,
-    cb.data_criacao,
-
     ra.tema_especifico,
-    ra.data_execucao,
-
-    a.nome_projeto,
-
-    uc.nome AS criado_por_nome,
-    uu.nome AS atualizado_por_nome
-
+    ra.data_execucao
 FROM cine_biblioteca cb
 
 INNER JOIN registro_atividade ra
-ON cb.id_registro_atividade = ra.id
+    ON ra.id = cb.id_registro_atividade
 
 INNER JOIN atividade a
-ON ra.id_atividade = a.id
+    ON a.id = ra.id_atividade
 
-INNER JOIN usuario uc
-ON cb.criado_por = uc.id
-
-INNER JOIN usuario uu
-ON cb.atualizado_por = uu.id
+WHERE a.nome_projeto = 'Cine Biblioteca'
 
 ORDER BY cb.id DESC
 ";
@@ -43,11 +29,15 @@ $resultado = $conexao->query($sql);
 
 $dados = [];
 
-while($row = $resultado->fetch_assoc()) {
-
-    $dados[] = $row;
+while ($linha = $resultado->fetch_assoc()) {
+    $dados[] = $linha;
 }
 
-echo json_encode($dados);
+respostaJSON(
+    true,
+    "Lista carregada.",
+    $dados
+);
+
 
 ?>
