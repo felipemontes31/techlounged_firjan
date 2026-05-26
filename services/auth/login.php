@@ -14,7 +14,7 @@ if (empty($email) || empty($senha)) {
 
     redirecionarPagina(
         "Preencha todos os campos.",
-        "/techlounged/views/login.php"
+        "/views/login.php"
     );
 }
 
@@ -48,7 +48,7 @@ if ($resultado->num_rows === 0) {
 
     redirecionarPagina(
         "Usuário não encontrado.",
-        "/techlounged/views/login.php"
+        "/views/login.php"
     );
 }
 
@@ -58,7 +58,7 @@ if (!$usuario['ativo']) {
 
     redirecionarPagina(
         "Usuário desativado.",
-        "/techlounged/views/login.php"
+        "/views/login.php"
     );
 }
 
@@ -66,7 +66,7 @@ if (!password_verify($senha, $usuario['senha_hash'])) {
 
     redirecionarPagina(
         "Senha inválida.",
-        "/techlounged/views/login.php"
+        "/views/login.php"
     );
 }
 
@@ -82,7 +82,7 @@ $_SESSION['usuario'] = [
 
 redirecionarPagina(
     "Login realizado com sucesso.",
-    "/techlounged/views/dashboard.php"
+    "/views/dashboard.php"
 );
 
 

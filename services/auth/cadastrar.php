@@ -15,7 +15,7 @@ if (
 
     redirecionarPagina(
         "Preencha todos os campos.",
-        "/techlounged/views/cadastro.php"
+        "/views/cadastro.php"
     );
 }
 
@@ -27,7 +27,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
     redirecionarPagina(
         "Email inválido.",
-        "/techlounged/views/cadastro.php"
+        "/views/cadastro.php"
     );
 }
 
@@ -54,7 +54,7 @@ if ($resultado->num_rows > 0) {
 
     redirecionarPagina(
         "Email já cadastrado.",
-        "/techlounged/views/cadastro.php"
+        "/views/cadastro.php"
     );
 }
 
@@ -102,7 +102,7 @@ if (!$stmt->execute()) {
 
     redirecionarPagina(
         "Erro ao criar conta.",
-        "/techlounged/views/cadastro.php"
+        "/views/cadastro.php"
     );
 }
 
@@ -112,7 +112,7 @@ if (!$stmt->execute()) {
 
 redirecionarPagina(
     "Conta criada com sucesso.",
-    "/techlounged/views/login.php"
+    "/views/login.php"
 );
 
 ?>

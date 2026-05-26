@@ -10,7 +10,7 @@ session_destroy();
 
 redirecionarPagina(
     "Logout realizado com sucesso.",
-    "/techlounged/views/login.php"
+    "/views/login.php"
 );
 
 ?>
