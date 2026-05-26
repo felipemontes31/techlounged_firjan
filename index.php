@@ -187,7 +187,7 @@
   <div class="carousel">
     <div class="carousel-track">
       <div class="card">
-        <img src="imagens/muraldigital.jpg" alt="Mural Digital">
+        <img src="imagem/muraldigital.jpeg" alt="Mural Digital">
         <div class="card-content">
           <h2>Mural Digital</h2>
           <p class="date">12 de Junho, 2026</p>
@@ -197,7 +197,7 @@
       </div>
 
       <div class="card">
-        <img src="imagens/biblioteca.jpeg" alt="De Frente com a Biblio">
+        <img src="imagem/biblioteca.jpeg" alt="De Frente com a Biblio">
         <div class="card-content">
           <h2>De Frente com a Biblio</h2>
           <p class="date">20 de Julho, 2026</p>
@@ -207,7 +207,7 @@
       </div>
 
       <div class="card">
-        <img src="imagens/projetointegrador.jpg" alt="Projeto Integrador">
+        <img src="imagem/projetointegrador.jpeg" alt="Projeto Integrador">
         <div class="card-content">
           <h2>Projeto Integrador</h2>
           <p class="date">5 de Agosto, 2026</p>
@@ -217,7 +217,7 @@
       </div>
 
       <div class="card">
-        <img src="imagens/planoanual.jpg" alt="Plano Atividades Anual">
+        <img src="imagem/planoanual.jpeg" alt="Plano Atividades Anual">
         <div class="card-content">
           <h2>Plano de Atividades Anual</h2>
           <p class="date">15 de Setembro, 2026</p>
