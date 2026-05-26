@@ -1,30 +1,39 @@
 <?php
 
-require_once("../../middleware/permissao.php");
 require_once("../../config/conexao.php");
 require_once("../../utils/response.php");
-
-verificarPermissao([
-    "Administrador"
-]);
 
 $nome = trim($_POST['nome'] ?? '');
 $email = trim($_POST['email'] ?? '');
 $senha = trim($_POST['senha'] ?? '');
-$id_funcao = intval($_POST['id_funcao'] ?? 0);
 
 if (
     empty($nome) ||
     empty($email) ||
-    empty($senha) ||
-    empty($id_funcao)
+    empty($senha)
 ) {
 
     redirecionarPagina(
         "Preencha todos os campos.",
-        "/techlounged/views/usuarios.php"
+        "/techlounged/views/cadastro.php"
     );
 }
+
+// =====================================================
+// VALIDAÇÃO DE EMAIL
+// =====================================================
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+
+    redirecionarPagina(
+        "Email inválido.",
+        "/techlounged/views/cadastro.php"
+    );
+}
+
+// =====================================================
+// VERIFICA EMAIL EXISTENTE
+// =====================================================
 
 $sqlVerifica = "
 SELECT id
@@ -45,14 +54,28 @@ if ($resultado->num_rows > 0) {
 
     redirecionarPagina(
         "Email já cadastrado.",
-        "/techlounged/views/usuarios.php"
+        "/techlounged/views/cadastro.php"
     );
 }
+
+// =====================================================
+// FUNÇÃO PADRÃO = ALUNO/PÚBLICO
+// =====================================================
+
+$id_funcao = 4;
+
+// =====================================================
+// HASH DA SENHA
+// =====================================================
 
 $senhaHash = password_hash(
     $senha,
     PASSWORD_DEFAULT
 );
+
+// =====================================================
+// INSERT
+// =====================================================
 
 $sql = "
 INSERT INTO usuario
@@ -78,14 +101,18 @@ $stmt->bind_param(
 if (!$stmt->execute()) {
 
     redirecionarPagina(
-        "Erro ao cadastrar usuário.",
-        "/techlounged/views/usuarios.php"
+        "Erro ao criar conta.",
+        "/techlounged/views/cadastro.php"
     );
 }
 
+// =====================================================
+// SUCESSO
+// =====================================================
+
 redirecionarPagina(
-    "Usuário cadastrado com sucesso.",
-    "/techlounged/views/usuarios.php"
+    "Conta criada com sucesso.",
+    "/techlounged/views/login.php"
 );
 
 ?>
