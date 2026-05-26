@@ -162,7 +162,7 @@
 <body>
   <header>
     <h1>Eventos em Destaque</h1>
-    <a href="login.html" class="login-btn">Login</a>
+    <a href="views/login.php" class="login-btn">Login</a>
   </header>
 
   <div class="search-bar">
