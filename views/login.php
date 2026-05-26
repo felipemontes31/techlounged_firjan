@@ -36,7 +36,7 @@
         </div>
 
         <hr> <div class="d-flex justify-content-between mt-3">
-          <a href="techlounged_firjan/views/registros.php" class="btn btn-success">
+          <a href="techlounged_firjan/views/cadastro.php" class="btn btn-success">
               Cadastrar Usuário
           </a>
 
