@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once(__DIR__ . "/../config/conexao.php");
-require_once(__DIR__ . "/../middleware/usuario.php");
+require_once(__DIR__ . "/../models/usuario.php");
 require_once(__DIR__ . "/../utils/json.php");
 
 $model = new Usuario($conexao);

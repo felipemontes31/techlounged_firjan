@@ -5,7 +5,7 @@ require_once(__DIR__ . "/../config/conexao.php");
 require_once(__DIR__ . "/../middleware/permissao.php");
 require_once(__DIR__ . "/../utils/json.php");
 require_once(__DIR__ . "/../utils/response.php");
-require_once(__DIR__ . "/../middleware/Periodicidade.php");
+require_once(__DIR__ . "/../models/Periodicidade.php");
 
 // Proteção: Só permite usuários logados. (Opcional: adicione funções permitidas ex: verificarPermissao(['Admin', 'Gestor']))
 //verificarPermissao(); 
