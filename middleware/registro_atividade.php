@@ -25,6 +25,7 @@ class RegistroAtividade
                     ra.*,
                     a.nome_projeto,
                     a.eh_publico,
+                    a.url_imagem AS url_imagem_atividade,
                     e.nome_espaco
                 FROM registro_atividade ra
                 INNER JOIN atividade a 
@@ -41,6 +42,7 @@ class RegistroAtividade
             SELECT 
                 ra.*,
                 a.nome_projeto,
+                a.url_imagem AS url_imagem_atividade,
                 e.nome_espaco
             FROM registro_atividade ra
             INNER JOIN atividade a 
@@ -68,6 +70,7 @@ class RegistroAtividade
                     ra.*,
                     a.nome_projeto,
                     a.eh_publico,
+                    a.url_imagem AS url_imagem_atividade,
                     e.nome_espaco
                 FROM registro_atividade ra
                 INNER JOIN atividade a 
@@ -82,6 +85,7 @@ class RegistroAtividade
                 SELECT 
                     ra.*,
                     a.nome_projeto,
+                    a.url_imagem AS url_imagem_atividade,
                     e.nome_espaco
                 FROM registro_atividade ra
                 INNER JOIN atividade a 
@@ -108,7 +112,6 @@ class RegistroAtividade
 
     public function criar($dados)
     {
-
         $sql = "
             INSERT INTO registro_atividade (
                 id_atividade,
@@ -119,16 +122,17 @@ class RegistroAtividade
                 status,
                 publico_realizado,
                 publico_previsto,
+                url_imagem,
                 criado_por,
                 atualizado_por
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ";
 
         $stmt = $this->conexao->prepare($sql);
 
         $stmt->bind_param(
-            "iissssiiii",
+            "iissssiisii",
             $dados['id_atividade'],
             $dados['id_espaco'],
             $dados['data_execucao'],
@@ -137,6 +141,7 @@ class RegistroAtividade
             $dados['status'],
             $dados['publico_realizado'],
             $dados['publico_previsto'],
+            $dados['url_imagem'],
             $dados['criado_por'],
             $dados['atualizado_por']
         );
@@ -162,6 +167,7 @@ class RegistroAtividade
                 status = ?,
                 publico_realizado = ?,
                 publico_previsto = ?,
+                url_imagem = ?,
                 atualizado_por = ?
             WHERE id = ?
         ";
@@ -169,7 +175,7 @@ class RegistroAtividade
         $stmt = $this->conexao->prepare($sql);
 
         $stmt->bind_param(
-            "iissssiiii",
+            "iissssiisii",
             $dados['id_atividade'],
             $dados['id_espaco'],
             $dados['data_execucao'],
@@ -178,6 +184,7 @@ class RegistroAtividade
             $dados['status'],
             $dados['publico_realizado'],
             $dados['publico_previsto'],
+            $dados['url_imagem'],
             $dados['atualizado_por'],
             $id
         );
