@@ -19,10 +19,11 @@
       
       <select name="categoria" aria-label="Selecionar Categoria">
         <option value="">Categoria</option>
-        <option value="musica">Música</option>
-        <option value="teatro">Teatro</option>
-        <option value="tecnologia">Tecnologia</option>
-        <option value="gastronomia">Gastronomia</option>
+        <option value="biblio">De frente com a Biblio</option>
+        <option value="mural">Mural Digital</option>
+        <option value="integrador">Projeto Integrador</option>
+        <option value="grandprix">Grand Prix Senai 2026</option>
+        <option value="adefinir">Conhecendo Você e seus interesses</option>
       </select> 
       
       <select name="espaco" aria-label="Selecionar Espaço">

@@ -37,7 +37,9 @@
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">Cadastrar Usuário</button>
-                            <a href="usuarios.php" class="btn btn-outline-secondary">Cancelar</a>
+                            <a href="login.php" class="btn btn-secondary">← Voltar</a>
+              
+          
                         </div>
 
                     </form>
