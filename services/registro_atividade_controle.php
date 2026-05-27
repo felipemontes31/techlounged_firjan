@@ -11,6 +11,8 @@ $model = new RegistroAtividade($conexao);
 
 $acao = $_GET['acao'] ?? '';
 
+$publico_criado = 0;
+
 $usuarioLogado = isset($_SESSION['usuario']);
 
 $funcao = $usuarioLogado
@@ -88,8 +90,9 @@ if ($acao === 'criar') {
         "data_finalizacao" => $_POST['data_finalizacao'],
         "tema_especifico" => $_POST['tema_especifico'],
         "status" => $_POST['status'],
-        "publico_realizado" => $_POST['publico_realizado'],
+        "publico_realizado" => $publico_criado,
         "publico_previsto" => $_POST['publico_previsto'],
+        "url_imagem" => $_POST['url_imagem'],
         "criado_por" => $_SESSION['usuario']['id'],
         "atualizado_por" => $_SESSION['usuario']['id']
 
@@ -124,6 +127,7 @@ if ($acao === 'editar') {
         "status" => $_POST['status'],
         "publico_realizado" => $_POST['publico_realizado'],
         "publico_previsto" => $_POST['publico_previsto'],
+        "url_imagem" => $_POST['url_imagem'],
         "atualizado_por" => $_SESSION['usuario']['id']
 
     ];
