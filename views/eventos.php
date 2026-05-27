@@ -365,15 +365,22 @@ if (in_array($perfilReal, ['Administrador', 'Bibliotecário'])) {
 
                 if(res.sucesso && res.dados.length > 0) {
                     res.dados.forEach(insc => {
+                        // Criamos o elemento select programaticamente ou garantimos que os IDs passem de forma limpa como inteiros
+                        const idInscricao = parseInt(insc.id);
+
                         corpo.innerHTML += `
                             <tr>
-                                <td style="padding:6px; border-bottom:1px solid #ddd; font-size:13px;">${insc.nome} (<small>${insc.matricula || 'Sem Matrícula'}</small>)</td>
-                                <td style="padding:6px; border-bottom:1px solid #ddd; font-size:13px;">${insc.tipo_inscricao}</td>
+                                <td style="padding:6px; border-bottom:1px solid #ddd; font-size:13px;">
+                                    ${insc.nome} (<small>${insc.matricula || 'Sem Matrícula'}</small>)
+                                </td>
+                                <td style="padding:6px; border-bottom:1px solid #ddd; font-size:13px;">
+                                    ${insc.tipo_inscricao}
+                                </td>
                                 <td style="padding:6px; border-bottom:1px solid #ddd;">
-                                    <select onchange="mudarStatusInscricaoAdmin(${insc.id}, this.value)" style="font-size:12px; padding:2px;">
-                                        <option value="Pendente" ${insc.status_inscricao === 'Pendente'?'selected':''}>Pendente</option>
-                                        <option value="Confirmado" ${insc.status_inscricao === 'Confirmado'?'selected':''}>Confirmado</option>
-                                        <option value="Recusada" ${insc.status_inscricao === 'Recusada'?'selected':''}>Recusada</option>
+                                    <select onchange="mudarStatusInscricaoAdmin(${idInscricao}, this.value)" style="font-size:12px; padding:2px;">
+                                        <option value="Pendente" ${insc.status_inscricao === 'Pendente' ? 'selected' : ''}>Pendente</option>
+                                        <option value="Confirmado" ${insc.status_inscricao === 'Confirmado' ? 'selected' : ''}>Confirmado</option>
+                                        <option value="Recusada" ${insc.status_inscricao === 'Recusada' ? 'selected' : ''}>Recusada</option>
                                     </select>
                                 </td>
                             </tr>
@@ -382,20 +389,33 @@ if (in_array($perfilReal, ['Administrador', 'Bibliotecário'])) {
                 } else {
                     corpo.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:10px; color:#777;">Ninguém inscrito ainda.</td></tr>';
                 }
-            });
+            })
+            .catch(err => console.error("Erro ao carregar inscritos:", err));
         }
 
         function mudarStatusInscricaoAdmin(idInscricao, novoStatus) {
+            // TESTE DE ENTRADA: Abre o F12 no navegador, aba Console, e veja se isso printa ao mudar o select
+            console.log("onchange disparado com sucesso! ID:", idInscricao, "Status:", novoStatus);    
             const formData = new FormData();
             formData.append('id_inscricao', idInscricao);
             formData.append('status_inscricao', novoStatus);
 
-            fetch(`${controllerPainel}?acao=modificar_status_admin`, { method: 'POST', body: formData })
+            // Explicitamos a ação na URL da requisição
+            fetch(`${controllerPainel}?acao=modificar_status_admin`, { 
+                method: 'POST', 
+                body: formData 
+            })
             .then(res => res.json())
             .then(res => {
                 alert(res.mensagem);
-                carregarDadosDoPainel();
-            });
+                if (res.sucesso) {
+                    // Recarrega o painel de fundo para atualizar os contadores numéricos de confirmados/pensando
+                    carregarDadosDoPainel(); 
+                    // DICA: Re-chama a listagem do modal para atualizar os dados na tabela do próprio modal sem precisar fechar
+                    abrirGerenciadorInscritos(document.getElementById('id').value || idInscricao, 0);
+                }
+            })
+            .catch(err => console.error("Erro na requisição:", err));
         }
 
         function redirecionarLogin() {

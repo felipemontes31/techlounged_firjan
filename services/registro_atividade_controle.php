@@ -96,15 +96,28 @@ switch ($acao) {
         respostaJSON(true, "Lista de inscritos obtida.", $dados);
         break;
 
+    
+    
     case 'modificar_status_admin':
-        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário'])) respostaJSON(false, "Negado.");
-        $id_inscricao = intval($_POST['id_inscricao'] ?? 0);
-        $novo_status = $_POST['status_inscricao'] ?? 'Pendente'; // Confirmado, Pendente, Recusada
+        // Proteção de escopo: apenas administradores mudam o status manualmente
+        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário'])) {
+            respostaJSON(false, "Acesso negado.");
+        }
 
+        // Captura os dados vindos do FormData ($_POST)
+        $id_inscricao = intval($_POST['id_inscricao'] ?? 0);
+        $novo_status = trim($_POST['status_inscricao'] ?? ''); // 'Confirmado', 'Pendente' ou 'Recusada'
+
+        // Validação de dados recebidos
+        if ($id_inscricao <= 0 || !in_array($novo_status, ['Confirmado', 'Pendente', 'Recusada'])) {
+            respostaJSON(false, "Parâmetros de alteração inválidos.");
+        }
+
+        // Executa o método na model de Inscrição que atualiza o status_inscricao
         if ($modelInscricao->atualizarStatusAdmin($id_inscricao, $novo_status)) {
-            respostaJSON(true, "Status da inscrição alterado com sucesso!");
+            respostaJSON(true, "Status da inscrição atualizado para '{$novo_status}' com sucesso!");
         } else {
-            respostaJSON(false, "Erro ao atualizar status.");
+            respostaJSON(false, "Erro ao atualizar o status da inscrição no banco de dados.");
         }
         break;
 
