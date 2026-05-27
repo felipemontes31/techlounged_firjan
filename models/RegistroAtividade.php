@@ -83,9 +83,12 @@ class RegistroAtividade
         $sql .= " ORDER BY ra.data_execucao ASC";
 
         $stmt = $this->conexao->prepare($sql);
-        if (count($condicoes) > 0) {
+        
+        // CORREÇÃO AQUI: Só faz o bind_param se a string de tipos não estiver vazia!
+        if (!empty($tipos)) {
             $stmt->bind_param($tipos, ...$valores);
         }
+        
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }

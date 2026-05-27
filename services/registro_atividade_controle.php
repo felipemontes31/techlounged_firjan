@@ -108,6 +108,111 @@ switch ($acao) {
         }
         break;
 
+    // ----------------------------------------------------------------
+    // NOVAS ROTAS: CRUD DE GERENCIAMENTO DO REGISTRO_ATIVIDADE
+    // ----------------------------------------------------------------
+    
+    case 'criar':
+        // Apenas Administrador e Bibliotecário podem criar execuções de eventos
+        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário'])) {
+            respostaJSON(false, "Acesso negado para esta operação.");
+        }
+
+        $dados = [
+            'id_atividade'     => intval($_POST['id_atividade'] ?? 0),
+            'id_espaco'        => intval($_POST['id_espaco'] ?? 0),
+            'data_execucao'    => trim($_POST['data_execucao'] ?? ''),
+            'data_finalizacao' => trim($_POST['data_finalizacao'] ?? '') ?: null,
+            'tema_especifico'  => trim($_POST['tema_especifico'] ?? '') ?: null,
+            'status'           => trim($_POST['status'] ?? 'Planejado'),
+            'publico_previsto' => intval($_POST['publico_previsto'] ?? 0) ?: null,
+            'publico_realizado'=> intval($_POST['publico_realizado'] ?? 0),
+            'url_imagem'       => trim($_POST['url_imagem'] ?? '') ?: null,
+            'confirm_auto'     => isset($_POST['confirm_auto']) ? 1 : 0,
+            'criado_por'       => $idUsuarioLogado ?? 1, // Fallback caso não ache na sessão
+            'atualizado_por'   => $idUsuarioLogado ?? 1
+        ];
+
+        // Validações básicas obrigatórias
+        if (!$dados['id_atividade'] || !$dados['id_espaco'] || empty($dados['data_execucao'])) {
+            respostaJSON(false, "Por favor, preencha a Atividade, o Espaço e a Data de Execução.");
+        }
+
+        if ($modelRegistro->criar($dados)) {
+            respostaJSON(true, "Novo registro de atividade cadastrado com sucesso!");
+        } else {
+            respostaJSON(false, "Erro interno ao salvar o registro no banco de dados.");
+        }
+        break;
+
+    case 'buscar':
+        // Rota que o JavaScript usa para preencher o formulário na hora de Editar
+        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário'])) {
+            respostaJSON(false, "Acesso negado.");
+        }
+
+        $id = intval($_GET['id'] ?? 0);
+        $registro = $modelRegistro->buscarPorId($id);
+
+        if ($registro) {
+            respostaJSON(true, "Dados encontrados.", $registro);
+        } else {
+            respostaJSON(false, "Registro de atividade não encontrado.");
+        }
+        break;
+
+    case 'atualizar':
+        // Salva as alterações enviadas pelo formulário de edição
+        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário'])) {
+            respostaJSON(false, "Acesso negado.");
+        }
+
+        $dados = [
+            'id'               => intval($_POST['id'] ?? 0),
+            'id_atividade'     => intval($_POST['id_atividade'] ?? 0),
+            'id_espaco'        => intval($_POST['id_espaco'] ?? 0),
+            'data_execucao'    => trim($_POST['data_execucao'] ?? ''),
+            'data_finalizacao' => trim($_POST['data_finalizacao'] ?? '') ?: null,
+            'tema_especifico'  => trim($_POST['tema_especifico'] ?? '') ?: null,
+            'status'           => trim($_POST['status'] ?? 'Planejado'),
+            'publico_previsto' => intval($_POST['publico_previsto'] ?? 0) ?: null,
+            'publico_realizado'=> intval($_POST['publico_realizado'] ?? 0),
+            'url_imagem'       => trim($_POST['url_imagem'] ?? '') ?: null,
+            'confirm_auto'     => isset($_POST['confirm_auto']) ? 1 : 0,
+            'atualizado_por'   => $idUsuarioLogado ?? 1
+        ];
+
+        if ($dados['id'] <= 0 || !$dados['id_atividade'] || !$dados['id_espaco'] || empty($dados['data_execucao'])) {
+            respostaJSON(false, "Dados insuficientes ou inválidos para atualização.");
+        }
+
+        if ($modelRegistro->atualizar($dados)) {
+            respostaJSON(true, "Registro de atividade atualizado com sucesso!");
+        } else {
+            respostaJSON(false, "Erro ao atualizar os dados do evento.");
+        }
+        break;
+
+    // ROTA ADICIONAL RECOMENDADA: Alimenta as caixas de seleção (Selects) do formulário de Cadastro
+    case 'carregar_selects_cadastro':
+        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário'])) {
+            respostaJSON(false, "Acesso negado.");
+        }
+
+        // Busca todas as atividades matrizes cadastráveis
+        $sqlAtividades = "SELECT id, nome_projeto FROM atividade ORDER BY nome_projeto ASC";
+        $atividades = $conexao->query($sqlAtividades)->fetch_all(MYSQLI_ASSOC);
+
+        // Busca todos os espaços físicos da escola cadastrados
+        $sqlEspacos = "SELECT id, nome_espaco, capacidade_maxima FROM espaco ORDER BY nome_espaco ASC";
+        $espacos = $conexao->query($sqlEspacos)->fetch_all(MYSQLI_ASSOC);
+
+        respostaJSON(true, "Dados auxiliares carregados.", [
+            'atividades' => $atividades,
+            'espacos'    => $espacos
+        ]);
+        break;
+
     default:
         respostaJSON(false, "Ação desconhecida.");
         break;
