@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eventos - Midiateca - Firjan - Sapucaí</title>
+  
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,28 +15,27 @@
   </header>
 
   <main>
-    <section class="search-bar">
-      <input type="text" placeholder="Buscar eventos...">
-      
-      <select name="categoria" aria-label="Selecionar Categoria">
-        <option value="">Categoria</option>
-        <option value="biblio">De frente com a Biblio</option>
-        <option value="mural">Mural Digital</option>
-        <option value="integrador">Projeto Integrador</option>
-        <option value="grandprix">Grand Prix Senai 2026</option>
-        <option value="adefinir">Conhecendo Você e seus interesses</option>
-      </select> 
-      
-      <select name="espaco" aria-label="Selecionar Espaço">
-        <option value="">Espaço</option>
-        <option value="midiateca">Midiateca</option>
-        <option value="auditorio">Auditório</option>
-        <option value="online">Online</option>
-      </select>
-      
-      <button type="button">Filtrar</button>
-    </section>
-
+    <section class="search-bar" aria-label="Filtros de Busca">
+  <input type="text" placeholder="Buscar eventos...">
+  
+  <select name="categoria" aria-label="Selecionar Categoria">
+    <option value="">Categoria</option>
+    <option value="biblio">De frente com a Biblio</option>
+    <option value="mural">Mural Digital</option>
+    <option value="integrador">Projeto Integrador</option>
+    <option value="grandprix">Grand Prix Senai 2026</option>
+    <option value="adefinir">Conhecendo Você e seus interesses</option>
+  </select> 
+  
+  <select name="espaco" aria-label="Selecionar Espaço">
+    <option value="">Espaço</option>
+    <option value="midiateca">Midiateca</option>
+    <option value="auditorio">Auditório</option>
+    <option value="online">Online</option>
+  </select>
+  
+  <button type="button">Filtrar</button>
+</section>
     <section class="carousel" aria-label="Carrossel de Eventos">
       <div class="carousel-track">
         
@@ -98,21 +98,18 @@
       track.style.transform = `translateX(-${currentIndex * 100}%)`;
     }
 
-    // Função para avançar o slide
     function nextSlide() {
       currentIndex = (currentIndex + 1) % cards.length;
       updateCarousel();
     }
 
-    // Função para voltar o slide
     function prevSlide() {
       currentIndex = (currentIndex - 1 + cards.length) % cards.length;
       updateCarousel();
     }
 
-    // Gerencia o timer automático (evita bugs quando o usuário clica manualmente)
     function startAutoSlide() {
-      stopAutoSlide(); // Garante que não haverá múltiplos timers rodando
+      stopAutoSlide(); 
       autoSlideInterval = setInterval(nextSlide, 6000);
     }
 
@@ -120,7 +117,6 @@
       clearInterval(autoSlideInterval);
     }
 
-    // Eventos dos botões com reset de timer para melhor UX
     nextButton.addEventListener('click', () => {
       nextSlide();
       startAutoSlide(); 
@@ -131,7 +127,7 @@
       startAutoSlide();
     });
 
-    // Inicia o carrossel automático ao carregar a página
+    // Inicia o fluxo
     startAutoSlide();
   </script>
 </body>

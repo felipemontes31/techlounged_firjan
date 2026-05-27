@@ -1,6 +1,6 @@
 <?php
 // Garante o carregamento das validações de sessão
-//require_once(__DIR__ . "/../../middleware/auth.php");//
+require_once(__DIR__ . "/../../middleware/auth.php");
 require_once(__DIR__ . "/../../config/conexao.php");
 
 // Opcional: Buscar os registros de atividades disponíveis do "Cine Biblioteca" para listar no Select
