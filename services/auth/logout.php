@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once("../../utils/response.php");
+require_once(__DIR__ ."/../../utils/response.php");
 
 session_destroy();
 

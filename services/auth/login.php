@@ -4,8 +4,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once("../../config/conexao.php");
-require_once("../../utils/response.php");
+require_once(__DIR__ ."/../../config/conexao.php");
+require_once(__DIR__ ."/../../utils/response.php");
 
 $email = trim($_POST['email'] ?? '');
 $senha = trim($_POST['senha'] ?? '');
