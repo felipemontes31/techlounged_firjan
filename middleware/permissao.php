@@ -11,7 +11,7 @@ function verificarPermissao($funcoesPermitidas = [])
 
         redirecionarPagina(
             "Você não possui permissão para acessar esta página.",
-            "/views/login.php"
+            "/index.php"
         );
     }
 }
