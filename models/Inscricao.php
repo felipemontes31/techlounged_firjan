@@ -117,5 +117,34 @@ class Inscricao
         return ['sucesso' => false, 'mensagem' => 'Erro técnico ao processar a inscrição.'];
     }
 
-    // ... (o restante dos métodos como listarPorEvento e atualizarStatusAdmin continuam iguais)
+    // Usuário comum alterando sua própria inscrição (Muda status para Pendente automático)
+    public function alterarMinhaInscricao($id_inscricao, $id_usuario, $novo_tipo)
+    {
+        $status_inscricao = 'Pendente';
+        $sql = "UPDATE inscricao SET tipo_inscricao = ?, status_inscricao = ? WHERE id = ? AND id_usuario_inscrito = ?";
+        $stmt = $this->conexao->prepare($sql);
+        $stmt->bind_param("ssii", $novo_tipo, $status_inscricao, $id_inscricao, $id_usuario);
+        return $stmt->execute();
+    }
+
+    // Listar inscrições de um evento específico para o gerenciamento do Admin
+    public function listarPorEvento($id_registro)
+    {
+        $sql = "SELECT i.*, u.nome, u.sobrenome, u.email, u.matricula FROM inscricao i 
+                INNER JOIN usuario u ON i.id_usuario_inscrito = u.id 
+                WHERE i.id_registro_atividade = ?";
+        $stmt = $this->conexao->prepare($sql);
+        $stmt->bind_param("i", $id_registro);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // Administrador alterando status manualmente
+    public function atualizarStatusAdmin($id_inscricao, $novo_status)
+    {
+        $sql = "UPDATE inscricao SET status_inscricao = ? WHERE id = ?";
+        $stmt = $this->conexao->prepare($sql);
+        $stmt->bind_param("si", $novo_status, $id_inscricao);
+        return $stmt->execute();
+    }
 }
