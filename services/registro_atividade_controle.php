@@ -4,161 +4,111 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once(__DIR__ . "/../models/registro_atividade.php");
+require_once(__DIR__ . "/../config/conexao.php");
 require_once(__DIR__ . "/../utils/json.php");
+require_once(__DIR__ . "/../models/RegistroAtividade.php");
+require_once(__DIR__ . "/../models/Inscricao.php");
 
-$model = new RegistroAtividade($conexao);
+$modelRegistro = new RegistroAtividade($conexao);
+$modelInscricao = new Inscricao($conexao);
 
 $acao = $_GET['acao'] ?? '';
+$funcaoUsuario = $_SESSION['usuario']['funcao'] ?? 'Visitante';
+$idUsuarioLogado = $_SESSION['usuario']['id'] ?? null;
 
-$publico_criado = 0;
+// Filtros recebidos via GET
+$filtros = [
+    'data_execucao'   => $_GET['f_data_execucao'] ?? '',
+    'data_finalizacao' => $_GET['f_data_finalizacao'] ?? '',
+    'status'           => $_GET['f_status'] ?? ''
+];
 
-$usuarioLogado = isset($_SESSION['usuario']);
+switch ($acao) {
+    // ----------------------------------------------------------------
+    // ROTAS DE VISUALIZAÇÃO / FILTRO (Público, Comum e Admin)
+    // ----------------------------------------------------------------
+    case 'listar_publico':
+        // Visitantes deslogados: Apenas futuros e públicos (eh_publico = 1)
+        $dados = $modelRegistro->listarComFiltros($filtros, true);
+        respostaJSON(true, "Eventos abertos carregados.", $dados);
+        break;
 
-$funcao = $usuarioLogado
-    ? $_SESSION['usuario']['funcao']
-    : null;
+    case 'listar_disponiveis_comum':
+        if (!$idUsuarioLogado) respostaJSON(false, "Não autorizado.");
+        // Usuário Comum logado: Vê eventos futuros (>= hoje) independente de eh_publico
+        // Criamos a lógica direto filtrando por data futura na consulta
+        $eventos = $modelRegistro->listarComFiltros($filtros);
+        $futuros = array_values(array_filter($eventos, function($e) {
+            return strtotime($e['data_execucao']) >= strtotime(date('Y-m-d'));
+        }));
+        respostaJSON(true, "Eventos ativos carregados.", $futuros);
+        break;
 
+    case 'listar_historico_comum':
+        if (!$idUsuarioLogado) respostaJSON(false, "Não autorizado.");
+        // Histórico do usuário comum: Passados onde ele se inscreveu
+        $dados = $modelRegistro->listarComFiltros($filtros, false, $idUsuarioLogado);
+        respostaJSON(true, "Histórico carregado.", $dados);
+        break;
 
-// =========================================================
-// LISTAR
-// =========================================================
+    case 'listar_admin':
+        // Admin e Bibliotecários: Visualizam tudo e gerenciam contadores
+        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário'])) {
+            respostaJSON(false, "Acesso restrito à administração.");
+        }
+        $dados = $modelRegistro->listarComFiltros($filtros);
+        respostaJSON(true, "Painel administrativo carregado.", $dados);
+        break;
 
-if ($acao === 'listar') {
+    // ----------------------------------------------------------------
+    // ROTAS DE INSCRIÇÃO
+    // ----------------------------------------------------------------
+    case 'inscrever':
+        if (!$idUsuarioLogado) {
+            respostaJSON(false, "login_obrigatorio"); // Avisa o JS para redirecionar
+        }
+        $id_registro = intval($_POST['id_registro_atividade'] ?? 0);
+        $tipo_inscricao = $_POST['tipo_inscricao'] ?? 'Confirmado'; // 'Confirmado' ou 'Pensando'
 
-    $resultado = $model->listarTodos($usuarioLogado);
+        $resultado = $modelInscricao->realizarInscricao($id_registro, $idUsuarioLogado, $tipo_inscricao);
+        respostaJSON($resultado['sucesso'], $resultado['mensagem']);
+        break;
 
-    $dados = [];
+    case 'alterar_inscricao_comum':
+        if (!$idUsuarioLogado) respostaJSON(false, "Não autorizado.");
+        $id_inscricao = intval($_POST['id_inscricao'] ?? 0);
+        $novo_tipo = $_POST['tipo_inscricao'] ?? 'Pensando';
 
-    while ($linha = $resultado->fetch_assoc()) {
-        $dados[] = $linha;
-    }
+        if ($modelInscricao->alterarMinhaInscricao($id_inscricao, $idUsuarioLogado, $novo_tipo)) {
+            respostaJSON(true, "Inscrição modificada! O status retornou para Pendente de avaliação.");
+        } else {
+            respostaJSON(false, "Erro ao alterar inscrição.");
+        }
+        break;
 
-    respostaJSON(true, "Lista carregada.", $dados);
+    // ----------------------------------------------------------------
+    // ROTAS DE GERENCIAMENTO (EXCLUSIVO ADMIN / BIBLIOTECÁRIO)
+    // ----------------------------------------------------------------
+    case 'listar_inscritos_evento':
+        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário'])) respostaJSON(false, "Negado.");
+        $id_registro = intval($_GET['id_registro'] ?? 0);
+        $dados = $modelInscricao->listarPorEvento($id_registro);
+        respostaJSON(true, "Lista de inscritos obtida.", $dados);
+        break;
+
+    case 'modificar_status_admin':
+        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário'])) respostaJSON(false, "Negado.");
+        $id_inscricao = intval($_POST['id_inscricao'] ?? 0);
+        $novo_status = $_POST['status_inscricao'] ?? 'Pendente'; // Confirmado, Pendente, Recusada
+
+        if ($modelInscricao->atualizarStatusAdmin($id_inscricao, $novo_status)) {
+            respostaJSON(true, "Status da inscrição alterado com sucesso!");
+        } else {
+            respostaJSON(false, "Erro ao atualizar status.");
+        }
+        break;
+
+    default:
+        respostaJSON(false, "Ação desconhecida.");
+        break;
 }
-
-
-// =========================================================
-// BUSCAR
-// =========================================================
-
-if ($acao === 'buscar') {
-
-    $id = intval($_GET['id']);
-
-    $resultado = $model->buscarPorId($id, $usuarioLogado);
-
-    if ($resultado->num_rows === 0) {
-
-        respostaJSON(false, "Registro não encontrado.");
-    }
-
-    respostaJSON(
-        true,
-        "Registro encontrado.",
-        $resultado->fetch_assoc()
-    );
-}
-
-
-// =========================================================
-// VERIFICAÇÃO DE PERMISSÃO ADMIN/BIBLIOTECÁRIO
-// =========================================================
-
-$permitidos = ['Administrador', 'Bibliotecário'];
-
-if (
-    !$usuarioLogado ||
-    !in_array($funcao, $permitidos)
-) {
-
-    respostaJSON(false, "Sem permissão.");
-}
-
-
-// =========================================================
-// CRIAR
-// =========================================================
-
-if ($acao === 'criar') {
-
-    $dados = [
-
-        "id_atividade" => $_POST['id_atividade'],
-        "id_espaco" => $_POST['id_espaco'],
-        "data_execucao" => $_POST['data_execucao'],
-        "data_finalizacao" => $_POST['data_finalizacao'],
-        "tema_especifico" => $_POST['tema_especifico'],
-        "status" => $_POST['status'],
-        "publico_realizado" => $publico_criado,
-        "publico_previsto" => $_POST['publico_previsto'],
-        "url_imagem" => $_POST['url_imagem'],
-        "criado_por" => $_SESSION['usuario']['id'],
-        "atualizado_por" => $_SESSION['usuario']['id']
-
-    ];
-
-    $sucesso = $model->criar($dados);
-
-    respostaJSON(
-        $sucesso,
-        $sucesso
-            ? "Registro criado."
-            : "Erro ao criar registro."
-    );
-}
-
-
-// =========================================================
-// EDITAR
-// =========================================================
-
-if ($acao === 'editar') {
-
-    $id = intval($_POST['id']);
-
-    $dados = [
-
-        "id_atividade" => $_POST['id_atividade'],
-        "id_espaco" => $_POST['id_espaco'],
-        "data_execucao" => $_POST['data_execucao'],
-        "data_finalizacao" => $_POST['data_finalizacao'],
-        "tema_especifico" => $_POST['tema_especifico'],
-        "status" => $_POST['status'],
-        "publico_realizado" => $_POST['publico_realizado'],
-        "publico_previsto" => $_POST['publico_previsto'],
-        "url_imagem" => $_POST['url_imagem'],
-        "atualizado_por" => $_SESSION['usuario']['id']
-
-    ];
-
-    $sucesso = $model->atualizar($id, $dados);
-
-    respostaJSON(
-        $sucesso,
-        $sucesso
-            ? "Registro atualizado."
-            : "Erro ao atualizar."
-    );
-}
-
-
-// =========================================================
-// EXCLUIR
-// =========================================================
-
-if ($acao === 'excluir') {
-
-    $id = intval($_POST['id']);
-
-    $sucesso = $model->excluir($id);
-
-    respostaJSON(
-        $sucesso,
-        $sucesso
-            ? "Registro removido."
-            : "Erro ao remover."
-    );
-}
-
-?>
