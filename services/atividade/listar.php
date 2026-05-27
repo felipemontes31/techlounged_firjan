@@ -10,6 +10,7 @@ SELECT
     a.objetivo,
     a.observacoes_gerais,
     a.eh_publico,
+    a.url_imagem,
     a.data_criacao,
 
     e.nome_eixo,
@@ -48,8 +49,10 @@ while($row = $resultado->fetch_assoc()) {
     $dados[] = $row;
 }
 
-header("Content-Type: application/json");
-
-echo json_encode($dados);
+respostaJSON(
+    true,
+    "Atividades carregadas.",
+    $dados
+);
 
 ?>
