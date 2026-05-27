@@ -1,4 +1,7 @@
 <?php
+
+require_once("../config/app.php");
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -52,6 +55,7 @@ if (in_array($perfilReal, ['Administrador', 'Bibliotecário'])) {
         <?php if ($perfilJS === 'Administrador'): ?>
             <button class="btn-sucesso" onclick="abrirModalCadastro()">+ Criar Novo Registro</button>
         <?php endif; ?>
+        <button class="btn-sucesso" onclick="fazerLogout()">Sair</button>
     </div>
 
     <div class="filtro-barra">
@@ -163,10 +167,10 @@ if (in_array($perfilReal, ['Administrador', 'Bibliotecário'])) {
     </div>
 
     <script>
-        const controllerPainel = '../services/registro_atividade_controle.php';
+        const controllerPainel = '<?= BASE_URL ?>/services/registro_atividade_controle.php';
 
         // Altere para a rota correspondente da sua controller de CRUD de Atividade se for separada
-        const urlCrudRegistro  = '../services/atividade_controle.php';
+        const urlCrudRegistro  = '<?= BASE_URL ?>/services/atividade_controle.php';
 
         // O PHP injeta o perfil real do usuário diretamente na constante do JavaScript
         const perfilUsuarioLogado = "<?php echo $perfilJS; ?>";
@@ -395,7 +399,7 @@ if (in_array($perfilReal, ['Administrador', 'Bibliotecário'])) {
         }
 
         function redirecionarLogin() {
-            window.location.href = "/techlounged/views/login.php";
+            window.location.href = "<?= BASE_URL ?>/views/login.php";
         }
 
         function fecharModais() {
@@ -420,6 +424,10 @@ if (in_array($perfilReal, ['Administrador', 'Bibliotecário'])) {
         function fecharModal() {
             document.getElementById('modalInscritos').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
+        }
+
+        function fazerLogout() {
+            window.location.href = "<?= BASE_URL ?>/services/auth/logout.php"
         }
     </script>
 </body>
