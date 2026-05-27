@@ -72,3 +72,10 @@ define(
     dirname($_SERVER['SCRIPT_NAME'])
 );
 ```
+
+### Em Config/app.php
+Colocar a rota base que você está usando
+Exemplo: Se sua pasta for techlounged_main e o endereço for 127.0.0.1/techlounged_main então o 
+```php
+define("BASE_URL", "/techlounged_main");
+```
