@@ -4,7 +4,7 @@
 // URL BASE DO PROJETO
 // ======================================================
 
-define("BASE_URL", "/techlounged");
+define("BASE_URL", "/techlounged_firjan");
 
 // ======================================================
 // CAMINHO FÍSICO DO PROJETO
