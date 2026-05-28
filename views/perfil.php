@@ -16,7 +16,7 @@ $u = $_SESSION['usuario'];
       <p class="tl-meta">Confira seus dados cadastrais e mantenha suas informações atualizadas.</p>
       <div class="tl-stat-grid">
         <div class="tl-stat"><strong><?= htmlspecialchars($u['nome'] ?? 'Usuário') ?></strong><span>Nome</span></div>
-        <div class="tl-stat"><strong><?= htmlspecialchars($u['funcao'] ?? $u['id_funcao'] ?? 'Aluno') ?></strong><span>Função</span></div>
+        <div class="tl-stat"><strong><?= htmlspecialchars($u['funcao'] ?? $u['id_funcao'] ?? 'Visitante') ?></strong><span>Função</span></div>
         <div class="tl-stat"><strong><?= htmlspecialchars($u['matricula'] ?? '-') ?></strong><span>Matrícula</span></div>
       </div>
     </section>

@@ -76,13 +76,14 @@ $_SESSION['usuario'] = [
     "id" => $usuario['id'],
     "nome" => $usuario['nome'],
     "email" => $usuario['email'],
-    "funcao" => $usuario['nome_funcao']
+    "funcao" => $usuario['nome_funcao'],
+    "matricula" => $usuario['matricula']
 
 ];
 
 redirecionarPagina(
     "Login realizado com sucesso.",
-    "/views/eventos.php"
+    "/index.php"
 );
 
 
