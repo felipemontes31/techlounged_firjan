@@ -567,19 +567,6 @@ if (in_array($perfilReal, ['Administrador', 'Bibliotecário'])) {
             document.getElementById('overlay').style.display = 'none';
         }
 
-        function mudarStatusInscricaoAdmin(idInscricao, novoStatus) {
-            const formData = new FormData();
-            formData.append('id_inscricao', idInscricao);
-            formData.append('status_inscricao', novoStatus);
-
-            fetch(`${controller}?acao=modificar_status_admin`, { method: 'POST', body: formData })
-            .then(res => res.json())
-            .then(res => {
-                alert(res.mensagem);
-                carregarDadosDoPainel();
-            });
-        }
-
         function fecharModal() {
             document.getElementById('modalInscritos').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
