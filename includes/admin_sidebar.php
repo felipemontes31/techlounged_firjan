@@ -1,21 +1,37 @@
 <?php
 $paginaAtual = basename($_SERVER['PHP_SELF']);
-$linksAdmin = [
-  'atividade.php' => 'Atividades',
-  'registros.php' => 'Registros de eventos',
-  'cine_biblioteca.php' => 'Cine Biblioteca',
-  'eixo.php' => 'Eixos',
-  'espaco.php' => 'Espaços',
-  'periodicidade.php' => 'Periodicidades',
-  'publico_alvo.php' => 'Público-alvo',
+$menuPrincipal = [
+  'registros.php' => ['rotulo' => 'Registro de eventos', 'icone' => '📅'],
+  'cine_biblioteca.php' => ['rotulo' => 'Cine Biblioteca', 'icone' => '🎬'],
+  'gerenciamento_sistema.php' => ['rotulo' => 'Gerenciamento do sistema', 'icone' => '⚙️'],
 ];
+$paginasGerenciamento = ['atividade.php','eixo.php','espaco.php','periodicidade.php','publico_alvo.php','usuarios.php','gerenciamento_sistema.php'];
 ?>
 <div class="tl-layout">
   <aside class="tl-sidebar">
-    <strong style="display:block; margin:0 0 14px;">Gestão TechLounged</strong>
-    <?php foreach ($linksAdmin as $arquivo => $rotulo): ?>
-      <a class="<?= $paginaAtual === $arquivo ? 'ativo' : '' ?>" href="<?= tl_url('views/admin/' . $arquivo) ?>"><?= $rotulo ?></a>
+    <div class="tl-sidebar-brand">
+      <strong>Gestão TechLounged</strong>
+      <small>Painel administrativo</small>
+    </div>
+
+    <?php foreach ($menuPrincipal as $arquivo => $item): ?>
+      <?php
+        $ativo = $paginaAtual === $arquivo;
+        if ($arquivo === 'gerenciamento_sistema.php' && in_array($paginaAtual, $paginasGerenciamento, true)) {
+          $ativo = true;
+        }
+      ?>
+      <a class="<?= $ativo ? 'ativo' : '' ?>" href="<?= tl_url('views/admin/' . $arquivo) ?>">
+        <span><?= $item['icone'] ?></span>
+        <span><?= $item['rotulo'] ?></span>
+      </a>
     <?php endforeach; ?>
-    <hr style="border:0; border-top:1px solid rgba(255,255,255,.18); margin:16px 0;">
-    <a href="<?= tl_url('views/eventos.php') ?>">Ver página pública</a>
+
+    <hr class="tl-sidebar-separador">
+
+    <button class="tl-sidebar-theme" type="button" onclick="tlAlternarTema()" data-tl-theme-toggle>
+      🌙 Modo escuro
+    </button>
+
+    <a href="<?= tl_url('views/eventos.php') ?>">🌐 Ver página pública</a>
   </aside>

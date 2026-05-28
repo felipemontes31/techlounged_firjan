@@ -109,26 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('f_busca_local').addEventListener('input', filtrarCardsLocalmente);
 });
 
-function obterParametroUrl(nome) {
-    const parametros = new URLSearchParams(window.location.search);
-    return parametros.get(nome) || "";
-}
-
 function obterQueryFiltros() {
-    const idEvento = obterParametroUrl("id_evento");
-
-    const dataInicial = document.getElementById("f_data_execucao")?.value || "";
-    const dataFinal = document.getElementById("f_data_finalizacao")?.value || "";
-    const status = document.getElementById("f_status")?.value || "";
-    const busca = document.getElementById("f_busca")?.value || "";
-
-    return (
-        `&f_data_execucao=${encodeURIComponent(dataInicial)}` +
-        `&f_data_finalizacao=${encodeURIComponent(dataFinal)}` +
-        `&f_status=${encodeURIComponent(status)}` +
-        `&f_busca=${encodeURIComponent(busca)}` +
-        `&f_id_registro=${encodeURIComponent(idEvento)}`
-    );
+  return `&f_data_execucao=${document.getElementById('f_data_execucao').value}&f_data_finalizacao=${document.getElementById('f_data_finalizacao').value}&f_status=${document.getElementById('f_status').value}&f_id_registro=${encodeURIComponent(eventoFiltradoId)}`;
 }
 
 function rotaPorPerfil() {

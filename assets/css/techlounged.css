@@ -140,3 +140,116 @@ button, input, select, textarea { font: inherit; }
   box-shadow: none;
   transform: none;
 }
+
+/* ======================================================
+   MODO ESCURO + AJUSTES DO MENU ADMINISTRATIVO V5
+   ====================================================== */
+:root[data-tema="escuro"] {
+  --azul-institucional: #4da3e8;
+  --azul-dinamico: #66b7ff;
+  --azul-claro: #102a43;
+  --cinza-slate: #aab8c5;
+  --cinza-fundo: #0b1220;
+  --branco: #121c2d;
+  --texto: #eef5ff;
+  --texto-suave: #b8c7d9;
+  --borda: #26364d;
+  --sucesso: #5ee0a0;
+  --alerta: #f2c46d;
+  --erro: #ff7b72;
+  --sombra: 0 18px 45px rgba(0, 0, 0, .35);
+  --sombra-card: 0 10px 24px rgba(0, 0, 0, .28);
+}
+
+:root[data-tema="escuro"] body,
+html[data-tema="escuro"] body {
+  background:
+    radial-gradient(circle at top left, rgba(0, 114, 206, .22), transparent 34rem),
+    linear-gradient(180deg, #07111f 0%, var(--cinza-fundo) 52%, #07111f 100%);
+  color: var(--texto);
+}
+
+:root[data-tema="escuro"] .tl-header,
+html[data-tema="escuro"] .tl-header {
+  background: rgba(8, 18, 32, .88);
+  border-bottom-color: var(--borda);
+}
+
+:root[data-tema="escuro"] .tl-card,
+:root[data-tema="escuro"] .tl-hero-panel,
+:root[data-tema="escuro"] .tl-stat,
+:root[data-tema="escuro"] .tl-table-wrap,
+:root[data-tema="escuro"] .tl-modal,
+:root[data-tema="escuro"] .tl-empty,
+:root[data-tema="escuro"] .tl-field input,
+:root[data-tema="escuro"] .tl-field select,
+:root[data-tema="escuro"] .tl-field textarea,
+:root[data-tema="escuro"] .tl-btn-secondary,
+html[data-tema="escuro"] .tl-card,
+html[data-tema="escuro"] .tl-hero-panel,
+html[data-tema="escuro"] .tl-stat,
+html[data-tema="escuro"] .tl-table-wrap,
+html[data-tema="escuro"] .tl-modal,
+html[data-tema="escuro"] .tl-empty,
+html[data-tema="escuro"] .tl-field input,
+html[data-tema="escuro"] .tl-field select,
+html[data-tema="escuro"] .tl-field textarea,
+html[data-tema="escuro"] .tl-btn-secondary {
+  background: var(--branco);
+  border-color: var(--borda);
+  color: var(--texto);
+}
+
+:root[data-tema="escuro"] .tl-table th,
+html[data-tema="escuro"] .tl-table th {
+  background: #0f2a45;
+  color: #d9edff;
+}
+
+:root[data-tema="escuro"] .tl-table td,
+html[data-tema="escuro"] .tl-table td {
+  border-top-color: var(--borda);
+  color: var(--texto);
+}
+
+:root[data-tema="escuro"] .tl-table tr:hover td,
+html[data-tema="escuro"] .tl-table tr:hover td {
+  background: #111f33;
+}
+
+:root[data-tema="escuro"] .tl-event-img,
+html[data-tema="escuro"] .tl-event-img {
+  background: linear-gradient(135deg, #0d2a44, #142238);
+}
+
+.tl-nav-actions { display:flex; align-items:center; gap:8px; }
+.tl-theme-toggle,
+.tl-sidebar-theme {
+  border: 1px solid var(--borda);
+  background: var(--branco);
+  color: var(--texto);
+  border-radius: 999px;
+  min-height: 40px;
+  padding: 9px 12px;
+  cursor: pointer;
+  font-weight: 800;
+}
+.tl-theme-toggle:hover,
+.tl-sidebar-theme:hover { border-color: var(--azul-dinamico); }
+
+.tl-sidebar-brand { margin-bottom: 16px; }
+.tl-sidebar-brand strong { display:block; }
+.tl-sidebar-brand small { display:block; opacity:.74; margin-top:3px; font-weight:600; }
+.tl-sidebar-separador { border:0; border-top:1px solid rgba(255,255,255,.18); margin:16px 0; }
+.tl-sidebar-theme { width:100%; margin-bottom:8px; background:rgba(255,255,255,.12); color:white; border-color:rgba(255,255,255,.2); text-align:left; }
+
+.tl-system-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:16px; }
+.tl-system-card { padding:18px; display:flex; flex-direction:column; gap:10px; min-height:180px; }
+.tl-system-icon { width:46px; height:46px; display:grid; place-items:center; border-radius:16px; background:var(--azul-claro); color:var(--azul-institucional); font-size:22px; }
+.tl-system-card h3 { margin:0; color:var(--azul-institucional); }
+.tl-system-card p { margin:0; color:var(--texto-suave); line-height:1.45; }
+.tl-system-card .tl-actions { margin-top:auto; }
+
+.tl-chip { display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:5px 9px; font-weight:800; font-size:12px; background:var(--azul-claro); color:var(--azul-institucional); }
+.tl-chip.off { background:#fff0f0; color:#9b1c1c; }
+:root[data-tema="escuro"] .tl-chip.off { background:#3a1720; color:#ffb3b3; }

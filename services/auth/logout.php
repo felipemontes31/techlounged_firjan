@@ -10,7 +10,7 @@ session_destroy();
 
 redirecionarPagina(
     "Logout realizado com sucesso.",
-    "/views/login.php"
+    "/index.php"
 );
 
 ?>

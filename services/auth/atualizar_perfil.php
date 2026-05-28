@@ -8,7 +8,7 @@ require_once(__DIR__ . "/../../utils/response.php");
 $idUsuario = intval($_SESSION['usuario']['id'] ?? 0);
 
 if ($idUsuario <= 0) {
-    redirecionarPagina("Sessão inválida. Faça login novamente.", BASE_URL . "/views/login.php");
+    redirecionarPagina("Sessão inválida. Faça login novamente.", BASE_URL . "/../views/login.php");
 }
 
 $nome = trim($_POST['nome'] ?? '');
@@ -20,11 +20,11 @@ $sexo = trim($_POST['sexo'] ?? 'Prefiro não informar');
 $sexosPermitidos = ['Masculino', 'Feminino', 'Prefiro não informar'];
 
 if ($nome === '' || $email === '') {
-    redirecionarPagina("Nome e e-mail são obrigatórios.", BASE_URL . "/views/perfil.php");
+    redirecionarPagina("Nome e e-mail são obrigatórios.", BASE_URL . "/../views/perfil.php");
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    redirecionarPagina("Informe um e-mail válido.", BASE_URL . "/views/perfil.php");
+    redirecionarPagina("Informe um e-mail válido.", BASE_URL . "/../views/perfil.php");
 }
 
 if (!in_array($sexo, $sexosPermitidos)) {
@@ -32,15 +32,15 @@ if (!in_array($sexo, $sexosPermitidos)) {
 }
 
 if (mb_strlen($nome) > 30) {
-    redirecionarPagina("O nome deve ter no máximo 30 caracteres.", BASE_URL . "/views/perfil.php");
+    redirecionarPagina("O nome deve ter no máximo 30 caracteres.", BASE_URL . "/../views/perfil.php");
 }
 
 if (mb_strlen($sobrenome) > 100) {
-    redirecionarPagina("O sobrenome deve ter no máximo 100 caracteres.", BASE_URL . "/views/perfil.php");
+    redirecionarPagina("O sobrenome deve ter no máximo 100 caracteres.", BASE_URL . "/../views/perfil.php");
 }
 
 if ($matricula !== '' && mb_strlen($matricula) > 10) {
-    redirecionarPagina("A matrícula deve ter no máximo 10 caracteres.", BASE_URL . "/views/perfil.php");
+    redirecionarPagina("A matrícula deve ter no máximo 10 caracteres.", BASE_URL . "/../views/perfil.php");
 }
 
 // Verifica se o e-mail já pertence a outro usuário.
@@ -50,7 +50,7 @@ $stmtEmail->execute();
 $emailExistente = $stmtEmail->get_result()->fetch_assoc();
 
 if ($emailExistente) {
-    redirecionarPagina("Este e-mail já está sendo utilizado por outro usuário.", BASE_URL . "/views/perfil.php");
+    redirecionarPagina("Este e-mail já está sendo utilizado por outro usuário.", BASE_URL . "/../views/perfil.php");
 }
 
 // Verifica se a matrícula já pertence a outro usuário.
@@ -61,7 +61,7 @@ if ($matricula !== '') {
     $matriculaExistente = $stmtMatricula->get_result()->fetch_assoc();
 
     if ($matriculaExistente) {
-        redirecionarPagina("Esta matrícula já está sendo utilizada por outro usuário.", BASE_URL . "/views/perfil.php");
+        redirecionarPagina("Esta matrícula já está sendo utilizada por outro usuário.", BASE_URL . "/../views/perfil.php");
     }
 }
 

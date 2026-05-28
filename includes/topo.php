@@ -33,7 +33,7 @@ if (!function_exists('tl_url')) {
       <span>TechLounged<small>Biblioteca • Eventos • Inscrições</small></span>
     </a>
 
-    <button class="tl-mobile-toggle" type="button" onclick="tlAlternarMenu()">☰ Menu</button>
+    <div class="tl-nav-actions"><button class="tl-theme-toggle" type="button" onclick="tlAlternarTema()" data-tl-theme-toggle>🌙</button><button class="tl-mobile-toggle" type="button" onclick="tlAlternarMenu()">☰ Menu</button></div>
 
     <nav class="tl-menu" data-tl-menu>
       <a href="<?= tl_url('views/eventos.php') ?>">Eventos</a>
@@ -42,7 +42,7 @@ if (!function_exists('tl_url')) {
         <a href="<?= tl_url('views/perfil.php') ?>">Meu perfil</a>
       <?php endif; ?>
       <?php if (tl_usuario_eh_admin()): ?>
-        <a href="<?= tl_url('views/admin/atividade.php') ?>">Administração</a>
+        <a href="<?= tl_url('views/admin/registros.php') ?>">Administração</a>
       <?php endif; ?>
       <?php if ($usuarioLogado): ?>
         <a href="<?= tl_url('services/auth/logout.php') ?>">Sair</a>
