@@ -82,7 +82,7 @@ $_SESSION['usuario'] = [
 
 redirecionarPagina(
     "Login realizado com sucesso.",
-    "/views/dashboard.php"
+    "/views/eventos.php"
 );
 
 
