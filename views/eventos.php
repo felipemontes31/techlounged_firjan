@@ -1,4 +1,7 @@
-<?php require_once(__DIR__ . '/../config/app.php'); if (session_status() === PHP_SESSION_NONE) session_start(); ?>
+<?php require_once(__DIR__ . '/../config/app.php'); if (session_status() === PHP_SESSION_NONE) session_start(); 
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,6 +12,8 @@
 </head>
 <body>
 <?php include(__DIR__ . '/../includes/topo.php'); ?>
+<?php include(__DIR__ . '/../includes/avatar_boasvindas.php'); ?>
+
 
 <main>
   <section class="tl-hero">
