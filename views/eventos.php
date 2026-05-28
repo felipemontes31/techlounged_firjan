@@ -25,7 +25,7 @@
         <div class="tl-actions">
           <a class="tl-btn tl-btn-primary" href="#eventos">Ver eventos disponíveis</a>
           <?php if (!$usuarioLogado): ?>
-            <a class="tl-btn tl-btn-secondary" href="<?= tl_url('views/login.php') ?>">Entrar para se inscrever</a>
+            <a class="tl-btn tl-btn-secondary" href="<?= tl_url('views/login.php') ?>" onclick="event.preventDefault(); tlAbrirLogin();">Entrar para se inscrever</a>
           <?php else: ?>
             <a class="tl-btn tl-btn-secondary" href="<?= tl_url('views/minhas_inscricoes.php') ?>">Minhas inscrições</a>
           <?php endif; ?>
@@ -179,7 +179,7 @@ function renderizarEventos(eventos) {
           <button class="tl-btn tl-btn-secondary" onclick="inscrever(${evento.id}, 'Pensando')">Tenho interesse</button>`;
       }
     } else {
-      acoes = `<a class="tl-btn tl-btn-primary" href="<?= tl_url('views/login.php') ?>">Entrar para se inscrever</a>`;
+      acoes = `<button class="tl-btn tl-btn-primary" type="button" onclick="tlAbrirLogin()">Entrar para se inscrever</button>`;
     }
 
     container.innerHTML += `
@@ -259,7 +259,7 @@ function inscrever(idRegistro, tipo) {
     .then(res => res.json())
     .then(res => {
       if (res.mensagem === 'login_obrigatorio') {
-        window.location.href = '<?= tl_url('views/login.php') ?>';
+        tlAbrirLogin();
         return;
       }
 

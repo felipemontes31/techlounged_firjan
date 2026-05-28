@@ -47,9 +47,10 @@ if (!function_exists('tl_url')) {
       <?php if ($usuarioLogado): ?>
         <a href="<?= tl_url('services/auth/logout.php') ?>">Sair</a>
       <?php else: ?>
-        <a href="<?= tl_url('views/login.php') ?>">Entrar</a>
-        <a class="ativo" href="<?= tl_url('views/cadastro.php') ?>">Cadastrar</a>
+        <a href="<?= tl_url('views/login.php') ?>" onclick="event.preventDefault(); tlAbrirLogin();">Entrar</a>
+        <a class="ativo" href="<?= tl_url('views/cadastro.php') ?>" onclick="event.preventDefault(); tlAbrirCadastro();">Cadastrar</a>
       <?php endif; ?>
     </nav>
   </div>
 </header>
+<?php include(__DIR__ . '/auth_modals.php'); ?>

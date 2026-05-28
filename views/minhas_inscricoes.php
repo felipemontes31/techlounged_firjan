@@ -9,6 +9,22 @@ require_once(__DIR__ . '/../config/app.php');
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Minhas inscrições | TechLounged</title>
   <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/techlounged.css">
+  <style>
+    .tl-actions-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .tl-btn-outline-danger {
+      background: transparent;
+      color: #b42318;
+      border-color: rgba(180, 35, 24, 0.28);
+    }
+    .tl-btn-outline-danger:hover {
+      background: rgba(180, 35, 24, 0.08);
+    }
+  </style>
 </head>
 <body>
 <?php include(__DIR__ . '/../includes/topo.php'); ?>
@@ -17,7 +33,7 @@ require_once(__DIR__ . '/../config/app.php');
     <div class="tl-section-head">
       <div>
         <h1 style="color:var(--azul-institucional); margin:0;">Minhas inscrições</h1>
-        <p>Acompanhe eventos confirmados, pendentes ou recusados. Eventos futuros ainda planejados podem ser cancelados.</p>
+        <p>Acompanhe eventos confirmados, pendentes ou recusados. Eventos futuros ainda planejados podem ser alterados ou cancelados.</p>
       </div>
       <a class="tl-btn tl-btn-primary" href="<?= tl_url('views/eventos.php') ?>">Encontrar novos eventos</a>
     </div>
@@ -46,9 +62,30 @@ function carregarMinhasInscricoes() {
       res.dados.forEach(item => {
         const classe = item.status_inscricao === 'Confirmado' ? 'success' : (item.status_inscricao === 'Recusada' ? 'danger' : 'warn');
         const podeDesinscrever = parseInt(item.pode_desinscrever || 0) === 1;
+        const idInscricao = parseInt(item.id_inscricao);
+        const tipoAtual = item.tipo_inscricao || 'Pensando';
+        const statusEvento = item.status_evento || 'Planejado';
+        const podeAlterar = podeDesinscrever && statusEvento === 'Planejado';
+
+        const botaoConfirmar = podeAlterar && tipoAtual !== 'Confirmado'
+          ? `<button class="tl-btn tl-btn-primary" type="button" onclick="alterarTipoInscricao(${idInscricao}, 'Confirmado')">Confirmar presença</button>`
+          : '';
+
+        const botaoInteresse = podeAlterar && tipoAtual !== 'Pensando'
+          ? `<button class="tl-btn tl-btn-secondary" type="button" onclick="alterarTipoInscricao(${idInscricao}, 'Pensando')">Tenho interesse</button>`
+          : '';
+
         const botaoDesinscrever = podeDesinscrever
-          ? `<button class="tl-btn tl-btn-secondary" type="button" onclick="desinscrever(${parseInt(item.id_inscricao)})">Cancelar inscrição</button>`
+          ? `<button class="tl-btn tl-btn-outline-danger" type="button" onclick="desinscrever(${idInscricao})">Cancelar inscrição</button>`
           : `<button class="tl-btn tl-btn-disabled" type="button" disabled>Cancelamento indisponível</button>`;
+
+        const botoesAcao = `
+          <div class="tl-actions-wrap">
+            ${botaoConfirmar}
+            ${botaoInteresse}
+            ${botaoDesinscrever}
+          </div>
+        `;
 
         alvo.innerHTML += `
           <article class="tl-card tl-event-card">
@@ -63,12 +100,36 @@ function carregarMinhasInscricoes() {
               <div class="tl-meta">📅 ${tlDataBR(item.data_execucao)} ${item.data_finalizacao ? 'até ' + tlDataBR(item.data_finalizacao) : ''}</div>
               <div class="tl-meta">📍 ${tlTextoSeguro(item.nome_espaco || 'Espaço a definir')}</div>
               <p class="tl-meta"><strong>Tema:</strong> ${tlTextoSeguro(item.tema_especifico || 'Geral')}</p>
-              <div class="tl-event-footer">${botaoDesinscrever}</div>
+              <div class="tl-event-footer">${botoesAcao}</div>
             </div>
           </article>`;
       });
     })
     .catch(() => alvo.innerHTML = '<div class="tl-empty" style="grid-column:1/-1;">Não foi possível carregar suas inscrições.</div>');
+}
+
+
+function alterarTipoInscricao(idInscricao, novoTipo) {
+  const mensagem = novoTipo === 'Confirmado'
+    ? 'Deseja confirmar sua presença neste evento?'
+    : 'Deseja alterar sua inscrição para tenho interesse?';
+
+  if (!confirm(mensagem)) return;
+
+  const formData = new FormData();
+  formData.append('id_inscricao', idInscricao);
+  formData.append('tipo_inscricao', novoTipo);
+
+  fetch(`${controllerPainel}?acao=alterar_inscricao_comum`, {
+    method: 'POST',
+    body: formData
+  })
+    .then(res => res.json())
+    .then(res => {
+      alert(res.mensagem);
+      if (res.sucesso) carregarMinhasInscricoes();
+    })
+    .catch(() => alert('Erro de comunicação ao alterar inscrição.'));
 }
 
 function desinscrever(idInscricao) {
