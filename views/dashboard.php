@@ -5,15 +5,6 @@ require_once("../config/conexao.php");
 
 ?>
 
-<!-- <h1>
-    Bem-vindo,
-    <?= $_SESSION['usuario']['nome'] ?>
-    (Email: <?= $_SESSION['usuario']['email'] ?>)
-</h1>
-
-<a href="../services/auth/logout.php">
-    Sair
-</a> -->
 <?php
 // CADASTRAR
 if (isset($_POST['cadastrar'])) {
@@ -215,19 +206,25 @@ $publicos = $conexao->query("SELECT * FROM publico_alvo");
 
 <body>
 
-    <div class="topo">
-
-        <h2>📚 Dashboard - TechLounge</h2>
-
-        <p>
-            Sistema de Gestão da Biblioteca
-        </p>
-
-    </div>
+<div class="topo">
+<div class="container d-flex justify-content-between align-items-center">
+<div>
+<h2>📚 Dashboard - TechLounge</h2>
+<p class="mb-0">
+Sistema de Gestão da Biblioteca
+</p>
+</div>
+<a href="../index.php" class="btn btn-outline-light d-flex align-items-center gap-2">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+<path fill-rule="evenodd" d="1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+</svg>
+Voltar
+</a>
+</div>
+</div>
 
     <div class="container mt-4">
 
-        <!-- CARDS -->
         <div class="row g-4">
 
             <div class="col-md-3">
@@ -281,7 +278,6 @@ $publicos = $conexao->query("SELECT * FROM publico_alvo");
         </div>
 
 
-        <!-- FORMULÁRIO -->
         <div class="card mt-5 shadow">
 
             <div class="card-header bg-dark text-white">
@@ -409,7 +405,6 @@ $publicos = $conexao->query("SELECT * FROM publico_alvo");
                         </div>
 
 
-                        <!-- STATUS -->
                         <div class="col-md-6 mb-3">
 
                             <label>Status da Atividade</label>
@@ -444,8 +439,7 @@ $publicos = $conexao->query("SELECT * FROM publico_alvo");
         </div>
 
 
-       <!-- TABELA -->
-<div class="card mt-5 shadow">
+       <div class="card mt-5 shadow">
 
     <div class="card-header bg-primary text-white">
         📋 Gerenciamento de Atividades
@@ -453,7 +447,6 @@ $publicos = $conexao->query("SELECT * FROM publico_alvo");
 
     <div class="card-body">
 
-        <!-- RESPONSIVIDADE -->
         <div class="table-responsive">
 
             <table class="table table-bordered table-hover align-middle">
@@ -497,7 +490,6 @@ $publicos = $conexao->query("SELECT * FROM publico_alvo");
                             <?= $a['nome_publico'] ?>
                         </td>
 
-                        <!-- STATUS -->
                         <td>
 
                             <?php if($a['status'] == 'Ativa'){ ?>
@@ -522,7 +514,6 @@ $publicos = $conexao->query("SELECT * FROM publico_alvo");
 
                         </td>
 
-                        <!-- VISIBILIDADE -->
                         <td>
 
                             <?php if($a['eh_publico'] == 1){ ?>
@@ -541,7 +532,6 @@ $publicos = $conexao->query("SELECT * FROM publico_alvo");
 
                         </td>
 
-                        <!-- AÇÕES -->
                         <td>
 
                             <div class="d-flex gap-2 flex-wrap">
@@ -558,7 +548,7 @@ $publicos = $conexao->query("SELECT * FROM publico_alvo");
                                    class="btn btn-danger btn-sm"
                                    onclick="return confirm('Deseja excluir esta atividade?')">
 
-                                    Excluir
+                                     Excluir
 
                                 </a>
 
