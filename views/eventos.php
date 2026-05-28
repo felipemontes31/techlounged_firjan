@@ -99,6 +99,7 @@
 <script>
 const controllerPainel = '<?= BASE_URL ?>/services/registro_atividade_controle.php';
 const perfilUsuarioLogado = "<?= tl_usuario_eh_admin() ? 'Administrador' : (tl_usuario_eh_comum() ? 'Comum' : 'Visitante') ?>";
+const eventoFiltradoId = new URLSearchParams(window.location.search).get('id_evento') || '';
 let idRegistroInscritosAtual = null;
 let capacidadeAtual = 0;
 
@@ -108,8 +109,26 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('f_busca_local').addEventListener('input', filtrarCardsLocalmente);
 });
 
+function obterParametroUrl(nome) {
+    const parametros = new URLSearchParams(window.location.search);
+    return parametros.get(nome) || "";
+}
+
 function obterQueryFiltros() {
-  return `&f_data_execucao=${document.getElementById('f_data_execucao').value}&f_data_finalizacao=${document.getElementById('f_data_finalizacao').value}&f_status=${document.getElementById('f_status').value}`;
+    const idEvento = obterParametroUrl("id_evento");
+
+    const dataInicial = document.getElementById("f_data_execucao")?.value || "";
+    const dataFinal = document.getElementById("f_data_finalizacao")?.value || "";
+    const status = document.getElementById("f_status")?.value || "";
+    const busca = document.getElementById("f_busca")?.value || "";
+
+    return (
+        `&f_data_execucao=${encodeURIComponent(dataInicial)}` +
+        `&f_data_finalizacao=${encodeURIComponent(dataFinal)}` +
+        `&f_status=${encodeURIComponent(status)}` +
+        `&f_busca=${encodeURIComponent(busca)}` +
+        `&f_id_registro=${encodeURIComponent(idEvento)}`
+    );
 }
 
 function rotaPorPerfil() {
@@ -119,7 +138,7 @@ function rotaPorPerfil() {
 }
 
 function carregarDadosDoPainel() {
-  document.getElementById('subTituloSessao').innerText = `Visualização ativa: ${perfilUsuarioLogado}`;
+  document.getElementById('subTituloSessao').innerText = eventoFiltradoId ? `Visualização ativa: ${perfilUsuarioLogado} • Evento filtrado pelo QR Code` : `Visualização ativa: ${perfilUsuarioLogado}`;
   fetch(`${controllerPainel}?acao=${rotaPorPerfil()}${obterQueryFiltros()}`)
     .then(res => res.json())
     .then(res => renderizarEventos(res.sucesso ? res.dados : []))
@@ -147,9 +166,14 @@ function renderizarEventos(eventos) {
 
     let acoes = '';
     if (perfilUsuarioLogado === 'Administrador') {
+      const botaoPanfleto = evento.eh_publico == 1
+        ? `<a class="tl-btn tl-btn-secondary" target="_blank" href="<?= tl_url('views/admin/panfleto_evento.php') ?>?id=${parseInt(evento.id)}">Panfleto PDF</a>`
+        : '';
+
       acoes = `
         <button class="tl-btn tl-btn-secondary" onclick="editarRegistro(${evento.id})">Editar</button>
-        <button class="tl-btn tl-btn-primary" onclick="abrirGerenciadorInscritos(${evento.id}, ${parseInt(evento.capacidade_maxima || evento.publico_previsto || 0)})">Inscritos: ${totalConfirmados + totalPensando}</button>`;
+        <button class="tl-btn tl-btn-primary" onclick="abrirGerenciadorInscritos(${evento.id}, ${parseInt(evento.capacidade_maxima || evento.publico_previsto || 0)})">Inscritos: ${totalConfirmados + totalPensando}</button>
+        ${botaoPanfleto}`;
     } else if (perfilUsuarioLogado === 'Comum') {
       const idMinhaInscricao = evento.id_inscricao_usuario || evento.id_inscricao || null;
       const minhaSituacao = evento.minha_status_inscricao || 'Pendente';

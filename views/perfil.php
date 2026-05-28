@@ -28,10 +28,14 @@ $u = $_SESSION['usuario'];
         <div class="tl-field"><label>Sobrenome</label><input name="sobrenome" value="<?= htmlspecialchars($u['sobrenome'] ?? '') ?>"></div>
         <div class="tl-field tl-full"><label>E-mail</label><input type="email" name="email" value="<?= htmlspecialchars($u['email'] ?? '') ?>" required></div>
         <div class="tl-field"><label>Matrícula</label><input name="matricula" value="<?= htmlspecialchars($u['matricula'] ?? '') ?>"></div>
-        <div class="tl-field"><label>Sexo</label><select name="sexo"><option>Prefiro não informar</option><option>Masculino</option><option>Feminino</option></select></div>
+        <div class="tl-field"><label>Sexo</label><select name="sexo">
+          <option value="Prefiro não informar" <?= (($u['sexo'] ?? '') === 'Prefiro não informar') ? 'selected' : '' ?>>Prefiro não informar</option>
+          <option value="Masculino" <?= (($u['sexo'] ?? '') === 'Masculino') ? 'selected' : '' ?>>Masculino</option>
+          <option value="Feminino" <?= (($u['sexo'] ?? '') === 'Feminino') ? 'selected' : '' ?>>Feminino</option>
+        </select></div>
         <div class="tl-actions tl-full"><button class="tl-btn tl-btn-primary" type="submit">Salvar alterações</button><a class="tl-btn tl-btn-secondary" href="<?= tl_url('views/minhas_inscricoes.php') ?>">Ver minhas inscrições</a></div>
       </form>
-      <p class="tl-meta" style="margin-top:14px;">Observação: esta tela espera o endpoint <code>services/auth/atualizar_perfil.php</code>. Caso ainda não exista, crie-o usando a tabela <code>usuario</code>.</p>
+      
     </section>
   </div>
 </main>

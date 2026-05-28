@@ -13,350 +13,274 @@ $modelRegistro = new RegistroAtividade($conexao);
 $modelInscricao = new Inscricao($conexao);
 
 $acao = $_GET['acao'] ?? '';
-$funcaoUsuario = $_SESSION['usuario']['funcao'] ?? 'Visitante';
-$idUsuarioLogado = $_SESSION['usuario']['id'] ?? null;
 
-// Filtros recebidos via GET
+$usuarioSessao = $_SESSION['usuario'] ?? null;
+$funcaoUsuario = $usuarioSessao['funcao'] ?? 'Visitante';
+$idUsuarioLogado = isset($usuarioSessao['id']) ? intval($usuarioSessao['id']) : null;
+
 $filtros = [
     'data_execucao'    => $_GET['f_data_execucao'] ?? '',
     'data_finalizacao' => $_GET['f_data_finalizacao'] ?? '',
-    'status'           => $_GET['f_status'] ?? ''
+    'status'           => $_GET['f_status'] ?? '',
+    'busca'            => $_GET['f_busca'] ?? '',
+    'id_registro'      => intval($_GET['f_id_registro'] ?? 0)
 ];
 
-function executarSelectRegistro(mysqli $conexao, string $sql, string $tipos = '', array $valores = []): array
+function usuarioEhGestorEvento(string $funcaoUsuario): bool
 {
-    $stmt = $conexao->prepare($sql);
-
-    if (!$stmt) {
-        respostaJSON(false, "Erro ao preparar consulta: " . $conexao->error);
-    }
-
-    if ($tipos !== '' && count($valores) > 0) {
-        $referencias = [];
-        foreach ($valores as $chave => $valor) {
-            $referencias[$chave] = &$valores[$chave];
-        }
-        array_unshift($referencias, $tipos);
-        call_user_func_array([$stmt, 'bind_param'], $referencias);
-    }
-
-    if (!$stmt->execute()) {
-        respostaJSON(false, "Erro ao executar consulta: " . $stmt->error);
-    }
-
-    $resultado = $stmt->get_result();
-    return $resultado ? $resultado->fetch_all(MYSQLI_ASSOC) : [];
+    return in_array($funcaoUsuario, ['Administrador', 'Bibliotecário'], true);
 }
 
-function montarCondicoesFiltros(array $filtros, string &$tipos, array &$valores): array
+function exigirLogin(?int $idUsuarioLogado): void
 {
-    $condicoes = [];
-
-    if (!empty($filtros['data_execucao'])) {
-        $condicoes[] = "ra.data_execucao >= ?";
-        $tipos .= "s";
-        $valores[] = $filtros['data_execucao'];
+    if (!$idUsuarioLogado) {
+        respostaJSON(false, "Não autorizado.");
     }
-
-    if (!empty($filtros['data_finalizacao'])) {
-        $condicoes[] = "COALESCE(ra.data_finalizacao, ra.data_execucao) <= ?";
-        $tipos .= "s";
-        $valores[] = $filtros['data_finalizacao'];
-    }
-
-    if (!empty($filtros['status'])) {
-        $condicoes[] = "ra.status = ?";
-        $tipos .= "s";
-        $valores[] = $filtros['status'];
-    }
-
-    return $condicoes;
 }
 
-function listarEventosComInscricaoDoUsuario(mysqli $conexao, array $filtros, int $idUsuario): array
+function exigirGestorEvento(string $funcaoUsuario): void
 {
-    $tipos = "i";
-    $valores = [$idUsuario];
-
-    $condicoes = montarCondicoesFiltros($filtros, $tipos, $valores);
-    $condicoes[] = "ra.data_execucao >= CURDATE()";
-
-    $where = count($condicoes) ? "WHERE " . implode(" AND ", $condicoes) : "";
-
-    $sql = "
-        SELECT
-            ra.id,
-            ra.id_atividade,
-            ra.id_espaco,
-            ra.data_execucao,
-            ra.data_finalizacao,
-            ra.tema_especifico,
-            ra.status,
-            ra.publico_realizado,
-            ra.publico_previsto,
-            ra.url_imagem,
-            ra.confirm_auto,
-            a.nome_projeto,
-            a.objetivo,
-            a.eh_publico,
-            a.url_imagem AS url_imagem_atividade,
-            COALESCE(NULLIF(ra.url_imagem, ''), NULLIF(a.url_imagem, '')) AS imagem_exibicao,
-            e.nome_espaco,
-            e.capacidade_maxima,
-            iu.id AS id_inscricao_usuario,
-            iu.tipo_inscricao AS minha_tipo_inscricao,
-            iu.status_inscricao AS minha_status_inscricao,
-            (
-                SELECT COUNT(*)
-                FROM inscricao ic
-                WHERE ic.id_registro_atividade = ra.id
-                  AND ic.status_inscricao = 'Confirmado'
-            ) AS total_confirmados,
-            (
-                SELECT COUNT(*)
-                FROM inscricao ip
-                WHERE ip.id_registro_atividade = ra.id
-                  AND ip.tipo_inscricao = 'Pensando'
-            ) AS total_pensando
-        FROM registro_atividade ra
-        INNER JOIN atividade a ON a.id = ra.id_atividade
-        INNER JOIN espaco e ON e.id = ra.id_espaco
-        LEFT JOIN inscricao iu
-               ON iu.id_registro_atividade = ra.id
-              AND iu.id_usuario_inscrito = ?
-        $where
-        ORDER BY ra.data_execucao ASC, ra.id ASC
-    ";
-
-    return executarSelectRegistro($conexao, $sql, $tipos, $valores);
+    if (!usuarioEhGestorEvento($funcaoUsuario)) {
+        respostaJSON(false, "Acesso restrito à administração.");
+    }
 }
 
-function listarMinhasInscricoes(mysqli $conexao, int $idUsuario): array
+function normalizarDadosRegistro(array $post, ?int $idUsuarioLogado, bool $incluiId = false): array
 {
-    $sql = "
-        SELECT
-            i.id AS id_inscricao,
-            i.tipo_inscricao,
-            i.status_inscricao,
-            i.data_criacao AS data_inscricao,
-            ra.id AS id_registro_atividade,
-            ra.data_execucao,
-            ra.data_finalizacao,
-            ra.tema_especifico,
-            ra.status AS status_evento,
-            ra.publico_previsto,
-            ra.url_imagem,
-            a.nome_projeto,
-            a.objetivo,
-            a.eh_publico,
-            a.url_imagem AS url_imagem_atividade,
-            COALESCE(NULLIF(ra.url_imagem, ''), NULLIF(a.url_imagem, '')) AS imagem_exibicao,
-            e.nome_espaco,
-            e.capacidade_maxima
-        FROM inscricao i
-        INNER JOIN registro_atividade ra ON ra.id = i.id_registro_atividade
-        INNER JOIN atividade a ON a.id = ra.id_atividade
-        INNER JOIN espaco e ON e.id = ra.id_espaco
-        WHERE i.id_usuario_inscrito = ?
-        ORDER BY ra.data_execucao DESC, i.data_criacao DESC
-    ";
+    $dados = [
+        'id_atividade'      => intval($post['id_atividade'] ?? 0),
+        'id_espaco'         => intval($post['id_espaco'] ?? 0),
+        'data_execucao'     => trim($post['data_execucao'] ?? ''),
+        'data_finalizacao'  => trim($post['data_finalizacao'] ?? '') ?: null,
+        'tema_especifico'   => trim($post['tema_especifico'] ?? '') ?: null,
+        'status'            => trim($post['status'] ?? 'Planejado'),
+        'publico_previsto'  => intval($post['publico_previsto'] ?? 0) ?: null,
+        'publico_realizado' => intval($post['publico_realizado'] ?? 0),
+        'url_imagem'        => trim($post['url_imagem'] ?? '') ?: null,
+        'confirm_auto'      => isset($post['confirm_auto']) ? 1 : 0,
+        'atualizado_por'    => $idUsuarioLogado ?? 1
+    ];
 
-    return executarSelectRegistro($conexao, $sql, "i", [$idUsuario]);
+    if ($incluiId) {
+        $dados['id'] = intval($post['id'] ?? 0);
+    } else {
+        $dados['criado_por'] = $idUsuarioLogado ?? 1;
+    }
+
+    return $dados;
 }
 
-switch ($acao) {
-    // ----------------------------------------------------------------
-    // ROTAS DE VISUALIZAÇÃO / FILTRO (Público, Comum e Admin)
-    // ----------------------------------------------------------------
-    case 'listar_publico':
-        // Visitantes deslogados: Apenas futuros e públicos (eh_publico = 1)
-        $dados = $modelRegistro->listarComFiltros($filtros, true);
-        respostaJSON(true, "Eventos abertos carregados.", $dados);
-        break;
+try {
+    switch ($acao) {
+        // ----------------------------------------------------------------
+        // ROTAS DE VISUALIZAÇÃO / FILTRO
+        // ----------------------------------------------------------------
+        case 'listar_publico':
+            $dados = $modelRegistro->listarEventosPublicos($filtros);
+            respostaJSON(true, "Eventos abertos carregados.", $dados);
+            break;
 
-    case 'listar_disponiveis_comum':
-        if (!$idUsuarioLogado) respostaJSON(false, "Não autorizado.");
+        case 'listar_disponiveis_comum':
+            exigirLogin($idUsuarioLogado);
 
-        // Retorna os eventos futuros já com os dados da inscrição do usuário logado.
-        // Isso permite bloquear o botão quando ele já estiver inscrito.
-        $dados = listarEventosComInscricaoDoUsuario($conexao, $filtros, intval($idUsuarioLogado));
-        respostaJSON(true, "Eventos ativos carregados.", $dados);
-        break;
+            $dados = $modelRegistro->listarEventosComInscricaoDoUsuario($filtros, $idUsuarioLogado);
+            respostaJSON(true, "Eventos ativos carregados.", $dados);
+            break;
 
-    case 'listar_historico_comum':
-        if (!$idUsuarioLogado) respostaJSON(false, "Não autorizado.");
-        $dados = $modelRegistro->listarComFiltros($filtros, false, $idUsuarioLogado);
-        respostaJSON(true, "Histórico carregado.", $dados);
-        break;
+        case 'listar_historico_comum':
+            exigirLogin($idUsuarioLogado);
 
-    case 'minhas_inscricoes':
-        if (!$idUsuarioLogado) respostaJSON(false, "Não autorizado.");
-        $dados = listarMinhasInscricoes($conexao, intval($idUsuarioLogado));
-        respostaJSON(true, "Minhas inscrições carregadas.", $dados);
-        break;
+            $dados = $modelRegistro->listarHistoricoComum($filtros, $idUsuarioLogado);
+            respostaJSON(true, "Histórico carregado.", $dados);
+            break;
 
-    case 'listar_admin':
-        // Admin e Bibliotecários: Visualizam tudo e gerenciam contadores
-        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário', 'Bibliotecario'])) {
-            respostaJSON(false, "Acesso restrito à administração.");
-        }
-        $dados = $modelRegistro->listarComFiltros($filtros);
-        respostaJSON(true, "Painel administrativo carregado.", $dados);
-        break;
+        case 'minhas_inscricoes':
+            exigirLogin($idUsuarioLogado);
 
-    // ----------------------------------------------------------------
-    // ROTAS DE INSCRIÇÃO
-    // ----------------------------------------------------------------
-    case 'inscrever':
-        if (!$idUsuarioLogado) {
-            respostaJSON(false, "login_obrigatorio");
-        }
-        $id_registro = intval($_POST['id_registro_atividade'] ?? 0);
-        $tipo_inscricao = $_POST['tipo_inscricao'] ?? 'Confirmado';
+            $dados = $modelRegistro->listarMinhasInscricoes($idUsuarioLogado);
+            respostaJSON(true, "Minhas inscrições carregadas.", $dados);
+            break;
 
-        $resultado = $modelInscricao->realizarInscricao($id_registro, $idUsuarioLogado, $tipo_inscricao);
-        respostaJSON($resultado['sucesso'], $resultado['mensagem']);
-        break;
+        case 'listar_admin':
+            exigirGestorEvento($funcaoUsuario);
 
-    case 'alterar_inscricao_comum':
-        if (!$idUsuarioLogado) respostaJSON(false, "Não autorizado.");
-        $id_inscricao = intval($_POST['id_inscricao'] ?? 0);
-        $novo_tipo = $_POST['tipo_inscricao'] ?? 'Pensando';
+            $dados = $modelRegistro->listarEventosAdmin($filtros);
+            respostaJSON(true, "Painel administrativo carregado.", $dados);
+            break;
 
-        if ($modelInscricao->alterarMinhaInscricao($id_inscricao, $idUsuarioLogado, $novo_tipo)) {
-            respostaJSON(true, "Inscrição modificada! O status retornou para Pendente de avaliação.");
-        } else {
+        // ----------------------------------------------------------------
+        // ROTAS DE INSCRIÇÃO
+        // ----------------------------------------------------------------
+        case 'inscrever':
+            if (!$idUsuarioLogado) {
+                respostaJSON(false, "login_obrigatorio");
+            }
+
+            $idRegistro = intval($_POST['id_registro_atividade'] ?? 0);
+            $tipoInscricao = $_POST['tipo_inscricao'] ?? 'Confirmado';
+
+            if ($idRegistro <= 0) {
+                respostaJSON(false, "Evento inválido.");
+            }
+
+            if (!in_array($tipoInscricao, ['Confirmado', 'Pensando'], true)) {
+                respostaJSON(false, "Tipo de inscrição inválido.");
+            }
+
+            $resultado = $modelInscricao->realizarInscricao($idRegistro, $idUsuarioLogado, $tipoInscricao);
+            respostaJSON($resultado['sucesso'], $resultado['mensagem']);
+            break;
+
+        case 'alterar_inscricao_comum':
+            exigirLogin($idUsuarioLogado);
+
+            $idInscricao = intval($_POST['id_inscricao'] ?? 0);
+            $novoTipo = $_POST['tipo_inscricao'] ?? 'Pensando';
+
+            if (!in_array($novoTipo, ['Confirmado', 'Pensando'], true)) {
+                respostaJSON(false, "Tipo de inscrição inválido.");
+            }
+
+            if ($modelInscricao->alterarMinhaInscricao($idInscricao, $idUsuarioLogado, $novoTipo)) {
+                respostaJSON(true, "Inscrição modificada! O status retornou para Pendente de avaliação.");
+            }
+
             respostaJSON(false, "Erro ao alterar inscrição.");
-        }
-        break;
+            break;
 
-    // ----------------------------------------------------------------
-    // ROTAS DE GERENCIAMENTO (EXCLUSIVO ADMIN / BIBLIOTECÁRIO)
-    // ----------------------------------------------------------------
-    case 'listar_inscritos_evento':
-        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário', 'Bibliotecario'])) respostaJSON(false, "Negado.");
-        $id_registro = intval($_GET['id_registro'] ?? 0);
-        $dados = $modelInscricao->listarPorEvento($id_registro);
-        respostaJSON(true, "Lista de inscritos obtida.", $dados);
-        break;
+        case 'desinscrever':
+            exigirLogin($idUsuarioLogado);
 
-    case 'modificar_status_admin':
-        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário', 'Bibliotecario'])) {
-            respostaJSON(false, "Acesso negado.");
-        }
+            $idInscricao = intval($_POST['id_inscricao'] ?? 0);
 
-        $id_inscricao = intval($_POST['id_inscricao'] ?? 0);
-        $novo_status = trim($_POST['status_inscricao'] ?? '');
+            if ($idInscricao <= 0) {
+                respostaJSON(false, "Inscrição inválida.");
+            }
 
-        if ($id_inscricao <= 0 || !in_array($novo_status, ['Confirmado', 'Pendente', 'Recusada'])) {
-            respostaJSON(false, "Parâmetros de alteração inválidos.");
-        }
+            $cancelou = $modelRegistro->cancelarMinhaInscricaoFutura($idInscricao, $idUsuarioLogado);
 
-        if ($modelInscricao->atualizarStatusAdmin($id_inscricao, $novo_status)) {
-            respostaJSON(true, "Status da inscrição atualizado para '{$novo_status}' com sucesso!");
-        } else {
-            respostaJSON(false, "Erro ao atualizar o status da inscrição no banco de dados.");
-        }
-        break;
+            if ($cancelou) {
+                respostaJSON(true, "Inscrição cancelada com sucesso.");
+            }
 
-    // ----------------------------------------------------------------
-    // CRUD DE GERENCIAMENTO DO REGISTRO_ATIVIDADE
-    // ----------------------------------------------------------------
-    case 'criar':
-        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário', 'Bibliotecario'])) {
-            respostaJSON(false, "Acesso negado para esta operação.");
-        }
+            respostaJSON(false, "Não foi possível cancelar. O evento pode já ter ocorrido ou não estar mais planejado.");
+            break;
 
-        $dados = [
-            'id_atividade'      => intval($_POST['id_atividade'] ?? 0),
-            'id_espaco'         => intval($_POST['id_espaco'] ?? 0),
-            'data_execucao'     => trim($_POST['data_execucao'] ?? ''),
-            'data_finalizacao'  => trim($_POST['data_finalizacao'] ?? '') ?: null,
-            'tema_especifico'   => trim($_POST['tema_especifico'] ?? '') ?: null,
-            'status'            => trim($_POST['status'] ?? 'Planejado'),
-            'publico_previsto'  => intval($_POST['publico_previsto'] ?? 0) ?: null,
-            'publico_realizado' => intval($_POST['publico_realizado'] ?? 0),
-            'url_imagem'        => trim($_POST['url_imagem'] ?? '') ?: null,
-            'confirm_auto'      => isset($_POST['confirm_auto']) ? 1 : 0,
-            'criado_por'        => $idUsuarioLogado ?? 1,
-            'atualizado_por'    => $idUsuarioLogado ?? 1
-        ];
+        // ----------------------------------------------------------------
+        // ROTAS DE GERENCIAMENTO DE INSCRITOS
+        // ----------------------------------------------------------------
+        case 'listar_inscritos_evento':
+            exigirGestorEvento($funcaoUsuario);
 
-        if (!$dados['id_atividade'] || !$dados['id_espaco'] || empty($dados['data_execucao'])) {
-            respostaJSON(false, "Por favor, preencha a Atividade, o Espaço e a Data de Execução.");
-        }
+            $idRegistro = intval($_GET['id_registro'] ?? 0);
 
-        if ($modelRegistro->criar($dados)) {
-            respostaJSON(true, "Novo registro de atividade cadastrado com sucesso!");
-        } else {
-            respostaJSON(false, "Erro interno ao salvar o registro no banco de dados.");
-        }
-        break;
+            if ($idRegistro <= 0) {
+                respostaJSON(false, "Evento inválido.");
+            }
 
-    case 'buscar':
-        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário', 'Bibliotecario'])) {
-            respostaJSON(false, "Acesso negado.");
-        }
+            $dados = $modelInscricao->listarPorEvento($idRegistro);
+            respostaJSON(true, "Lista de inscritos obtida.", $dados);
+            break;
 
-        $id = intval($_GET['id'] ?? 0);
-        $registro = $modelRegistro->buscarPorId($id);
+        case 'modificar_status_admin':
+            exigirGestorEvento($funcaoUsuario);
 
-        if ($registro) {
-            respostaJSON(true, "Dados encontrados.", $registro);
-        } else {
+            $idInscricao = intval($_POST['id_inscricao'] ?? 0);
+            $novoStatus = trim($_POST['status_inscricao'] ?? '');
+
+            if ($idInscricao <= 0 || !in_array($novoStatus, ['Confirmado', 'Pendente', 'Recusada'], true)) {
+                respostaJSON(false, "Parâmetros de alteração inválidos.");
+            }
+
+            if ($modelInscricao->atualizarStatusAdmin($idInscricao, $novoStatus)) {
+                respostaJSON(true, "Status da inscrição atualizado para '{$novoStatus}' com sucesso!");
+            }
+
+            respostaJSON(false, "Erro ao atualizar o status da inscrição.");
+            break;
+
+        // ----------------------------------------------------------------
+        // CRUD DE REGISTRO_ATIVIDADE
+        // ----------------------------------------------------------------
+        case 'criar':
+            exigirGestorEvento($funcaoUsuario);
+
+            $dados = normalizarDadosRegistro($_POST, $idUsuarioLogado, false);
+
+            if (!$dados['id_atividade'] || !$dados['id_espaco'] || empty($dados['data_execucao'])) {
+                respostaJSON(false, "Preencha a Atividade, o Espaço e a Data de Execução.");
+            }
+
+            if ($modelRegistro->criar($dados)) {
+                respostaJSON(true, "Novo registro de atividade cadastrado com sucesso!");
+            }
+
+            respostaJSON(false, "Erro interno ao salvar o registro.");
+            break;
+
+        case 'buscar':
+            exigirGestorEvento($funcaoUsuario);
+
+            $id = intval($_GET['id'] ?? 0);
+
+            if ($id <= 0) {
+                respostaJSON(false, "ID inválido.");
+            }
+
+            $registro = $modelRegistro->buscarPorId($id);
+
+            if ($registro) {
+                respostaJSON(true, "Dados encontrados.", $registro);
+            }
+
             respostaJSON(false, "Registro de atividade não encontrado.");
-        }
-        break;
+            break;
 
-    case 'atualizar':
-        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário', 'Bibliotecario'])) {
-            respostaJSON(false, "Acesso negado.");
-        }
+        case 'atualizar':
+            exigirGestorEvento($funcaoUsuario);
 
-        $dados = [
-            'id'                => intval($_POST['id'] ?? 0),
-            'id_atividade'      => intval($_POST['id_atividade'] ?? 0),
-            'id_espaco'         => intval($_POST['id_espaco'] ?? 0),
-            'data_execucao'     => trim($_POST['data_execucao'] ?? ''),
-            'data_finalizacao'  => trim($_POST['data_finalizacao'] ?? '') ?: null,
-            'tema_especifico'   => trim($_POST['tema_especifico'] ?? '') ?: null,
-            'status'            => trim($_POST['status'] ?? 'Planejado'),
-            'publico_previsto'  => intval($_POST['publico_previsto'] ?? 0) ?: null,
-            'publico_realizado' => intval($_POST['publico_realizado'] ?? 0),
-            'url_imagem'        => trim($_POST['url_imagem'] ?? '') ?: null,
-            'confirm_auto'      => isset($_POST['confirm_auto']) ? 1 : 0,
-            'atualizado_por'    => $idUsuarioLogado ?? 1
-        ];
+            $dados = normalizarDadosRegistro($_POST, $idUsuarioLogado, true);
 
-        if ($dados['id'] <= 0 || !$dados['id_atividade'] || !$dados['id_espaco'] || empty($dados['data_execucao'])) {
-            respostaJSON(false, "Dados insuficientes ou inválidos para atualização.");
-        }
+            if ($dados['id'] <= 0 || !$dados['id_atividade'] || !$dados['id_espaco'] || empty($dados['data_execucao'])) {
+                respostaJSON(false, "Dados insuficientes ou inválidos para atualização.");
+            }
 
-        if ($modelRegistro->atualizar($dados)) {
-            respostaJSON(true, "Registro de atividade atualizado com sucesso!");
-        } else {
+            if ($modelRegistro->atualizar($dados)) {
+                respostaJSON(true, "Registro de atividade atualizado com sucesso!");
+            }
+
             respostaJSON(false, "Erro ao atualizar os dados do evento.");
-        }
-        break;
+            break;
 
-    case 'carregar_selects_cadastro':
-        if (!in_array($funcaoUsuario, ['Administrador', 'Bibliotecário', 'Bibliotecario'])) {
-            respostaJSON(false, "Acesso negado.");
-        }
+        case 'deletar':
+            exigirGestorEvento($funcaoUsuario);
 
-        $sqlAtividades = "SELECT id, nome_projeto FROM atividade ORDER BY nome_projeto ASC";
-        $atividades = $conexao->query($sqlAtividades)->fetch_all(MYSQLI_ASSOC);
+            $id = intval($_GET['id'] ?? $_POST['id'] ?? 0);
 
-        $sqlEspacos = "SELECT id, nome_espaco, capacidade_maxima FROM espaco ORDER BY nome_espaco ASC";
-        $espacos = $conexao->query($sqlEspacos)->fetch_all(MYSQLI_ASSOC);
+            if ($id <= 0) {
+                respostaJSON(false, "ID inválido.");
+            }
 
-        respostaJSON(true, "Dados auxiliares carregados.", [
-            'atividades' => $atividades,
-            'espacos'    => $espacos
-        ]);
-        break;
+            if ($modelRegistro->deletar($id)) {
+                respostaJSON(true, "Registro de atividade excluído com sucesso.");
+            }
 
-    default:
-        respostaJSON(false, "Ação desconhecida.");
-        break;
+            respostaJSON(false, "Erro ao excluir. Verifique se existem inscrições vinculadas.");
+            break;
+
+        case 'carregar_selects_cadastro':
+            exigirGestorEvento($funcaoUsuario);
+
+            $dados = $modelRegistro->listarSelectsCadastro();
+            respostaJSON(true, "Dados auxiliares carregados.", $dados);
+            break;
+
+        default:
+            respostaJSON(false, "Ação desconhecida.");
+            break;
+    }
+} catch (Throwable $erro) {
+    respostaJSON(false, "Erro interno: " . $erro->getMessage());
 }
+
+?>
