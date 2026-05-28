@@ -22,9 +22,12 @@ $sql = "
 SELECT
     u.id,
     u.nome,
+    u.sobrenome,
     u.email,
     u.senha_hash,
     u.ativo,
+    u.matricula,
+    u.sexo,
     f.nome_funcao
 
 FROM usuario u
@@ -75,9 +78,11 @@ $_SESSION['usuario'] = [
 
     "id" => $usuario['id'],
     "nome" => $usuario['nome'],
+    "sobrenome" => $usuario['sobrenome'],
     "email" => $usuario['email'],
     "funcao" => $usuario['nome_funcao'],
-    "matricula" => $usuario['matricula']
+    "matricula" => $usuario['matricula'],
+    "sexo" => $usuario['sexo']
 
 ];
 
