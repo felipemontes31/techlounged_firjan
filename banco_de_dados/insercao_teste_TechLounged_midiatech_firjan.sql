@@ -76,22 +76,22 @@ INSERT INTO atividade (id, id_eixo, id_periodicidade, id_publico_alvo, nome_proj
 -- 3. INSERÇÃO DOS REGISTROS DE ATIVIDADE (CALENDÁRIO EXECUÇÃO 2026)
 -- ====================================================================
 
-INSERT INTO registro_atividade (id, id_atividade, id_espaco, data_execucao, data_finalizacao, tema_especifico, status, publico_previsto, publico_realizado, criado_por, atualizado_por) VALUES 
-(2, 3, 1, '2026-05-11', '2026-05-11', 'Integração de Novos Alunos', 'Concluído', 40, 38, 2, 2),
-(3, 4, 1, '2026-03-06', '2026-03-06', 'Presença Feminina na Tecnologia', 'Concluído', 30, 25, 2, 2),
-(4, 5, 1, '2026-03-30', '2026-03-30', 'Regras Básicas do P.I.', 'Concluído', 45, 42, 2, 2),
-(5, 6, 1, '2026-03-30', '2026-03-30', 'Incentivo de Inscrições', 'Concluído', 45, 45, 2, 2),
-(6, 7, 1, '2026-03-20', '2026-03-20', 'Mapeamento de Perfil Literário', 'Concluído', 35, 31, 2, 2),
-(7, 8, 1, '2026-04-16', '2026-04-16', 'Planejamento Estratégico', 'Concluído', NULL, NULL, 2, 2),
-(8, 9, 1, '2026-05-18', '2026-05-18', 'Fontes de Informação Científica', 'Planejado', 30, NULL, 2, 2),
-(9, 10, 1, '2026-06-01', '2026-06-01', 'Plágio e Fake News', 'Planejado', 30, NULL, 2, 2),
-(10, 11, 1, '2026-07-15', '2026-07-15', 'Curadoria de Conteúdo Digital', 'Planejado', 25, NULL, 2, 2),
-(11, 12, 1, '2026-08-20', '2026-08-20', 'Oficina de Portfólio Digital', 'Planejado', 20, NULL, 2, 2),
-(12, 13, 1, '2026-10-19', '2026-10-19', 'Evento Integrado de Tecnologia', 'Planejado', 50, NULL, 2, 2),
+INSERT INTO registro_atividade (id, id_atividade, id_espaco, data_execucao, data_finalizacao, tema_especifico, status, publico_previsto, publico_realizado, criado_por, atualizado_por, url_imagem) VALUES 
+(2, 3, 1, '2026-05-11', '2026-05-11', 'Integração de Novos Alunos', 'Concluído', 40, 38, 2, 2, 'https://portal.unila.edu.br/noticias/primeira-semana-letiva-e-dedicada-ao-acolhimento-aos-novos-estudantes/alunos.jpg'),
+(3, 4, 1, '2026-03-06', '2026-03-06', 'Presença Feminina na Tecnologia', 'Concluído', 30, 25, 2, 2, 'https://forbes.com.br/wp-content/uploads/2021/07/carreira_mulherestecnologia_abre_8julho_dowell.jpg'),
+(4, 5, 1, '2026-03-30', '2026-03-30', 'Regras Básicas do P.I.', 'Concluído', 45, 42, 2, 2, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROLRqwwgmakIly2Kpzxmzno0QWPvM21sX2Vw&s'),
+(5, 6, 1, '2026-03-30', '2026-03-30', 'Incentivo de Inscrições', 'Concluído', 45, 45, 2, 2, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbx2wyIpvspeozyDvGdcPcNfxXltSLdzu9zw&s'),
+(6, 7, 1, '2026-03-20', '2026-03-20', 'Mapeamento de Perfil Literário', 'Concluído', 35, 31, 2, 2, 'https://mentalmapsbrasil.com.br/wp-content/uploads/2024/09/escolas-literarias-resumo-mapa-mental-1024x755.webp'),
+(7, 8, 1, '2026-04-16', '2026-04-16', 'Planejamento Estratégico', 'Concluído', NULL, NULL, 2, 2, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSicbDtaaawBKFtU3ULYakm2Bvl6as35e31Jw&s'),
+(8, 9, 1, '2026-05-18', '2026-05-18', 'Fontes de Informação Científica', 'Planejado', 30, NULL, 2, 2, 'https://www.urcamp.edu.br/storage/images/images/165c4d025106431707397157.png'),
+(9, 10, 1, '2026-06-01', '2026-06-01', 'Plágio e Fake News', 'Planejado', 30, NULL, 2, 2, 'https://seguranca.tic.ufrj.br/wp-content/uploads/2018/09/fake_news.png'),
+(10, 11, 1, '2026-07-15', '2026-07-15', 'Curadoria de Conteúdo Digital', 'Planejado', 25, NULL, 2, 2, 'https://fia.com.br/wp-content/uploads/2020/07/c1.jpg'),
+(11, 12, 1, '2026-08-20', '2026-08-20', 'Oficina de Portfólio Digital', 'Planejado', 20, NULL, 2, 2, 'https://static.wixstatic.com/media/b454cd_c5e4af3c35834761b9a3d10f447b596e~mv2.png/v1/fill/w_980,h_551,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/b454cd_c5e4af3c35834761b9a3d10f447b596e~mv2.png'),
+(12, 13, 1, '2026-10-19', '2026-10-19', 'Evento Integrado de Tecnologia', 'Planejado', 50, NULL, 2, 2, 'https://euax.com.br/wp-content/uploads/2024/08/eventos-de-tecnologia.webp'),
 -- Execuções vinculadas à Atividade ID 1
-(13, 1, 1, '2026-05-08', '2026-05-08', 'Sessão Animada / Literatura', 'Concluído', 30, 28, 2, 2),
-(14, 1, 1, '2026-05-22', '2026-05-22', 'Sessão Quarta Revolução Industrial', 'Concluído', 35, 30, 2, 2),
-(15, 1, 1, '2026-06-05', '2026-06-05', 'Sessão Sustentabilidade e Inclusão', 'Planejado', 30, NULL, 2, 2);
+(13, 1, 1, '2026-05-08', '2026-05-08', 'Sessão Animada / Literatura', 'Concluído', 30, 28, 2, 2, 'https://www.shutterstock.com/image-vector/inspiring-illustration-rear-view-depicts-260nw-2769039159.jpg'),
+(14, 1, 1, '2026-05-22', '2026-05-22', 'Sessão Quarta Revolução Industrial', 'Concluído', 35, 30, 2, 2, 'https://politan.com.br/wp-content/uploads/2022/09/csm_shutterstock_pra_pagina_2__1__d9df082fde.jpg.webp'),
+(15, 1, 1, '2026-06-05', '2026-06-05', 'Sessão Sustentabilidade e Inclusão', 'Planejado', 30, NULL, 2, 2, 'https://www.sescsp.org.br/wp-content/uploads/2021/12/1-1.jpg');
 
 -- ====================================================================
 -- 4. DETALHAMENTO DO CINE BIBLIOTECA (MÍDIAS EXIBIDAS)
