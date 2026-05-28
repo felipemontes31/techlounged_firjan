@@ -74,3 +74,46 @@ verificarPermissao(['Administrador', 'Bibliotecário', 'Bibliotecario']);
 ```
 
 Caso a sessão guarde apenas `id_funcao`, ajuste o middleware para mapear os IDs para nomes ou aceite IDs diretamente.
+
+## Criar pasta config
+
+### Arquivos base da pasta
+
+#### app.php
+```php
+<?php
+
+// ======================================================
+// URL BASE DO PROJETO
+// ======================================================
+
+define("BASE_URL", "/techlounged");
+
+// ======================================================
+// CAMINHO FÍSICO DO PROJETO
+// ======================================================
+
+define("BASE_PATH", dirname(__DIR__));
+
+?>
+```
+
+#### conexao.php
+```php
+<?php
+
+$host = "127.0.0.1";
+$usuario = "root";
+$senha = "";
+$banco = "techlounged";
+
+$conexao = new mysqli($host, $usuario, $senha, $banco);
+
+if ($conexao->connect_error) {
+    die("Erro de conexão: " . $conexao->connect_error);
+}
+
+$conexao->set_charset("utf8mb4");
+
+?>
+```
