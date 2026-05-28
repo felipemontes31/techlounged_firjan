@@ -25,27 +25,166 @@ if (in_array($perfilReal, ['Administrador', 'Bibliotecário'])) {
 <head>
     <meta charset="UTF-8">
     <title>Painel de Eventos da Biblioteca</title>
-    <style>
-        body { font-family: Segoe UI, sans-serif; margin: 20px; background: #f8f9fa; }
-        .grid-eventos { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
-        .card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: relative; }
-        .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 4px; }
-        .badge { display: inline-block; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 4px; background: #e3f2fd; color: #0d47a1; }
-        .badge-privado { background: #ffebee; color: #c62828; }
-        .filtro-barra { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd; display: flex; gap: 15px; align-items: flex-end; margin-bottom: 25px; }
-        
-        /* Estilos dos Modais */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border: 1px solid #ccc; padding: 20px; z-index: 100; max-height: 85vh; overflow-y: auto; width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-radius: 8px; }
-        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 99;}
-        
-        /* Formulários dentro do modal */
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 4px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 6px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        
-        .btn-principal { background: #007bff; color: white; border: none; padding: 8px 16px; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .btn-sucesso { background: #28a745; color: white; border: none; padding: 8px 16px; cursor: pointer; border-radius: 4px; font-weight: bold; }
-    </style>
+
+<style>
+    body {
+        font-family: Segoe UI, sans-serif;
+        margin: 20px;
+        background: #F4F5F7;
+        color: #004B87;
+    }
+
+    .grid-eventos {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .card {
+        background: #FFFFFF;
+        border: 1px solid #E2EBF4;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 3px 8px rgba(0, 75, 135, 0.08);
+        position: relative;
+        transition: 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 14px rgba(0, 75, 135, 0.15);
+    }
+
+    .card img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #E2EBF4;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: bold;
+        border-radius: 4px;
+        background: #E2EBF4;
+        color: #004B87;
+    }
+
+    .badge-privado {
+        background: #708090;
+        color: #FFFFFF;
+    }
+
+    .filtro-barra {
+        background: #FFFFFF;
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #E2EBF4;
+        display: flex;
+        gap: 15px;
+        align-items: flex-end;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 6px rgba(0, 75, 135, 0.05);
+    }
+
+    /* Estilos dos Modais */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #FFFFFF;
+        border: 1px solid #E2EBF4;
+        padding: 20px;
+        z-index: 100;
+        max-height: 85vh;
+        overflow-y: auto;
+        width: 500px;
+        box-shadow: 0 6px 18px rgba(0, 75, 135, 0.2);
+        border-radius: 10px;
+    }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 75, 135, 0.45);
+        z-index: 99;
+    }
+
+    /* Formulários dentro do modal */
+    .form-group {
+        margin-bottom: 12px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        font-size: 13px;
+        margin-bottom: 4px;
+        color: #004B87;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        border: 1px solid #708090;
+        border-radius: 6px;
+        background: #F4F5F7;
+        transition: border 0.2s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #0072CE;
+        outline: none;
+        background: #FFFFFF;
+    }
+
+    .btn-principal {
+        background: #0072CE;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        cursor: pointer;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: 0.2s ease;
+    }
+
+    .btn-principal:hover {
+        background: #004B87;
+    }
+
+    .btn-sucesso {
+        background: #004B87;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        cursor: pointer;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: 0.2s ease;
+    }
+
+    .btn-sucesso:hover {
+        background: #0072CE;
+    }
+</style>
+```
+
 </head>
 <body>
 
