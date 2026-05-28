@@ -195,7 +195,12 @@ function listarRegistros() {
             <td>${tlDataBR(item.data_execucao)}</td>
             <td><span class="tl-badge">${tlTextoSeguro(item.status || 'Planejado')}</span></td>
             <td>${tlTextoSeguro(item.publico_previsto || item.capacidade_maxima || 'A definir')}</td>
-            <td><button class="tl-btn tl-btn-secondary" type="button" onclick="editarRegistro(${parseInt(item.id)})">Editar</button></td>
+            <td>
+              <div class="tl-row-actions">
+                <button class="tl-btn tl-btn-secondary tl-btn-small" type="button" onclick="editarRegistro(${parseInt(item.id)})">Editar</button>
+                <a class="tl-btn tl-btn-primary tl-btn-small" href="<?= tl_url('views/admin/relatorio_inscritos.php') ?>?id=${parseInt(item.id)}" target="_blank">Relatório</a>
+              </div>
+            </td>
           </tr>
         `;
       });

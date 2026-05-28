@@ -253,3 +253,16 @@ html[data-tema="escuro"] .tl-event-img {
 .tl-chip { display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:5px 9px; font-weight:800; font-size:12px; background:var(--azul-claro); color:var(--azul-institucional); }
 .tl-chip.off { background:#fff0f0; color:#9b1c1c; }
 :root[data-tema="escuro"] .tl-chip.off { background:#3a1720; color:#ffb3b3; }
+
+/* V7 - ações compactas em tabelas e relatório de inscritos */
+.tl-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tl-btn-small {
+  padding: 8px 12px;
+  min-height: auto;
+  font-size: 13px;
+}
