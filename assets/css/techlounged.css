@@ -266,3 +266,109 @@ html[data-tema="escuro"] .tl-event-img {
   min-height: auto;
   font-size: 13px;
 }
+
+
+/* ======================================================
+   MODAIS DE LOGIN E CADASTRO V8
+   ====================================================== */
+.tl-auth-overlay {
+  backdrop-filter: blur(4px);
+}
+
+.tl-auth-modal {
+  width: min(520px, calc(100% - 32px));
+  padding: 26px;
+}
+
+.tl-auth-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.tl-auth-head h3 {
+  margin: 0 0 4px;
+  color: var(--azul-institucional);
+  font-size: 26px;
+  letter-spacing: -.04em;
+}
+
+.tl-auth-head p {
+  margin: 0;
+  color: var(--texto-suave);
+  line-height: 1.45;
+  font-size: 14px;
+}
+
+.tl-auth-form {
+  gap: 14px;
+}
+
+.tl-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--borda);
+  background: var(--branco);
+  color: var(--texto);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+
+.tl-modal-close:hover {
+  border-color: var(--azul-dinamico);
+  color: var(--azul-institucional);
+}
+
+.tl-auth-switch {
+  margin: 0;
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 14px;
+}
+
+.tl-auth-switch button {
+  border: 0;
+  background: transparent;
+  color: var(--azul-institucional);
+  font-weight: 800;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.tl-auth-switch button:hover {
+  text-decoration: underline;
+}
+
+.tl-auth-trigger {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+:root[data-tema="escuro"] .tl-modal-close,
+html[data-tema="escuro"] .tl-modal-close {
+  background: var(--branco);
+  color: var(--texto);
+  border-color: var(--borda);
+}
+
+@media (max-width: 640px) {
+  .tl-auth-head {
+    align-items: flex-start;
+  }
+
+  .tl-auth-modal {
+    padding: 22px;
+  }
+}

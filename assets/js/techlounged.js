@@ -9,10 +9,21 @@ function tlFecharModais() {
 }
 
 function tlAbrirModal(id) {
-  const overlay = document.querySelector('.tl-modal-overlay');
   const modal = document.getElementById(id);
-  if (overlay) overlay.style.display = 'block';
+  document.querySelectorAll('.tl-modal-overlay').forEach(el => el.style.display = 'block');
   if (modal) modal.style.display = 'block';
+}
+
+function tlAbrirLogin() {
+  tlFecharModais();
+  tlAbrirModal('modalLogin');
+  setTimeout(() => document.getElementById('login_email')?.focus(), 80);
+}
+
+function tlAbrirCadastro() {
+  tlFecharModais();
+  tlAbrirModal('modalCadastro');
+  setTimeout(() => document.getElementById('cadastro_nome')?.focus(), 80);
 }
 
 function tlTextoSeguro(valor, fallback = '') {
@@ -53,4 +64,19 @@ function tlAlternarTema() {
 (function tlInicializarTema() {
   const temaSalvo = localStorage.getItem('techlounged_tema') || 'claro';
   tlAplicarTema(temaSalvo);
+})();
+
+
+(function tlInicializarModaisAutenticacao() {
+  document.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape') tlFecharModais();
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const parametros = new URLSearchParams(window.location.search);
+    const auth = parametros.get('auth');
+
+    if (auth === 'login') tlAbrirLogin();
+    if (auth === 'cadastro') tlAbrirCadastro();
+  });
 })();
