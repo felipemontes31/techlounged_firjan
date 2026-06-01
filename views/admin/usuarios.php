@@ -19,7 +19,7 @@ require_once(__DIR__ . '/../../config/app.php');
   <div class="tl-admin-top">
     <div>
       <h1>Usuários</h1>
-      <p class="tl-meta">Gerencie dados cadastrais, status e perfil de acesso dos usuários.</p>
+      <p class="tl-meta">Gerencie dados cadastrais, curso, status e perfil de acesso dos usuários.</p>
     </div>
     <a class="tl-btn tl-btn-secondary" href="<?= tl_url('views/admin/gerenciamento_sistema.php') ?>">Voltar ao gerenciamento</a>
   </div>
@@ -33,6 +33,13 @@ require_once(__DIR__ . '/../../config/app.php');
       <div class="tl-field"><label>Sobrenome</label><input id="sobrenome" name="sobrenome" maxlength="100"></div>
       <div class="tl-field"><label>E-mail *</label><input type="email" id="email" name="email" required></div>
       <div class="tl-field"><label>Matrícula</label><input id="matricula" name="matricula" maxlength="10"></div>
+
+      <div class="tl-field">
+        <label>Curso</label>
+        <select id="id_curso" name="id_curso">
+          <option value="">Carregando...</option>
+        </select>
+      </div>
 
       <div class="tl-field">
         <label>Sexo</label>
@@ -78,6 +85,7 @@ require_once(__DIR__ . '/../../config/app.php');
           <th>Usuário</th>
           <th>E-mail</th>
           <th>Matrícula</th>
+          <th>Curso</th>
           <th>Perfil</th>
           <th>Status</th>
           <th>Ações</th>
@@ -95,6 +103,7 @@ const urlController = '<?= BASE_URL ?>/services/usuario_controle.php';
 
 document.addEventListener('DOMContentLoaded', () => {
   carregarFuncoes();
+  carregarCursos();
   listarUsuarios();
 });
 
@@ -111,6 +120,19 @@ function carregarFuncoes() {
     });
 }
 
+function carregarCursos() {
+  fetch(`${urlController}?acao=listar_cursos`)
+    .then(r => r.json())
+    .then(res => {
+      const select = document.getElementById('id_curso');
+      select.innerHTML = '<option value="">Sem curso vinculado</option>';
+      if (!res.sucesso) return alert(res.mensagem);
+      res.dados.forEach(curso => {
+        select.innerHTML += `<option value="${curso.id}">${tlTextoSeguro(curso.nome_curso)}</option>`;
+      });
+    });
+}
+
 function listarUsuarios() {
   fetch(`${urlController}?acao=listar`)
     .then(r => r.json())
@@ -118,11 +140,11 @@ function listarUsuarios() {
       const corpo = document.getElementById('tabelaCorpo');
       corpo.innerHTML = '';
       if (!res.sucesso) {
-        corpo.innerHTML = `<tr><td colspan="7">${tlTextoSeguro(res.mensagem)}</td></tr>`;
+        corpo.innerHTML = `<tr><td colspan="8">${tlTextoSeguro(res.mensagem)}</td></tr>`;
         return;
       }
       if (!res.dados.length) {
-        corpo.innerHTML = '<tr><td colspan="7">Nenhum usuário encontrado.</td></tr>';
+        corpo.innerHTML = '<tr><td colspan="8">Nenhum usuário encontrado.</td></tr>';
         return;
       }
       res.dados.forEach(u => {
@@ -133,11 +155,14 @@ function listarUsuarios() {
             <td><strong>${tlTextoSeguro(nomeCompleto)}</strong></td>
             <td>${tlTextoSeguro(u.email)}</td>
             <td>${tlTextoSeguro(u.matricula || '-')}</td>
+            <td>${tlTextoSeguro(u.nome_curso || '-')}</td>
             <td>${tlTextoSeguro(u.nome_funcao || u.funcao || u.id_funcao)}</td>
             <td>${u.ativo == 1 ? '<span class="tl-chip">Ativo</span>' : '<span class="tl-chip off">Inativo</span>'}</td>
             <td>
-              <button class="tl-btn tl-btn-secondary" onclick="editarUsuario(${u.id})">Editar</button>
-              <button class="tl-btn tl-btn-danger" onclick="excluirUsuario(${u.id})">Excluir</button>
+              <div class="tl-row-actions">
+                <button class="tl-btn tl-btn-secondary tl-btn-small" onclick="editarUsuario(${parseInt(u.id)})">Editar</button>
+                <button class="tl-btn tl-btn-danger tl-btn-small" onclick="excluirUsuario(${parseInt(u.id)})">Excluir</button>
+              </div>
             </td>
           </tr>`;
       });
@@ -173,7 +198,7 @@ function editarUsuario(id) {
     .then(res => {
       if (!res.sucesso) return alert(res.mensagem);
       const u = res.dados;
-      ['id','nome','sobrenome','email','matricula','sexo','id_funcao','ativo'].forEach(campo => {
+      ['id','nome','sobrenome','email','matricula','sexo','id_funcao','id_curso','ativo'].forEach(campo => {
         const el = document.getElementById(campo);
         if (el) el.value = u[campo] ?? '';
       });

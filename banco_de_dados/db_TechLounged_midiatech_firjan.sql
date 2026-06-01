@@ -12,6 +12,13 @@ CREATE TABLE funcao (
     descricao TEXT
 );
 
+
+CREATE TABLE cursos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome_curso VARCHAR(50) NOT NULL UNIQUE,
+    descricao TEXT
+);
+
 CREATE TABLE usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     id_funcao INT NOT NULL,
@@ -20,11 +27,13 @@ CREATE TABLE usuario (
     sexo varchar(20) DEFAULT 'Prefiro não informar' CHECK (sexo IN ('Masculino', 'Feminino', 'Prefiro não informar')),
     email VARCHAR(100) NOT NULL UNIQUE,
     matricula VARCHAR(10) DEFAULT NULL UNIQUE,
+    id_curso INT DEFAULT NULL,
     senha_hash VARCHAR(255) NOT NULL,
     ativo BOOLEAN DEFAULT TRUE,
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_usuario_funcao FOREIGN KEY (id_funcao) REFERENCES funcao(id)
+    CONSTRAINT fk_usuario_funcao FOREIGN KEY (id_funcao) REFERENCES funcao(id),
+    CONSTRAINT fk_usuario_curso FOREIGN KEY (id_curso) REFERENCES cursos(id)
 );
 
 CREATE TABLE eixo (

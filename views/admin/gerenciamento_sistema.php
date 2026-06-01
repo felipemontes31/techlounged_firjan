@@ -59,6 +59,13 @@ require_once(__DIR__ . '/../../config/app.php');
       <div class="tl-actions"><a class="tl-btn tl-btn-primary" href="<?= tl_url('views/admin/publico_alvo.php') ?>">Gerenciar</a></div>
     </article>
 
+    <article class="tl-card tl-system-card">
+      <span class="tl-system-icon">🎓</span>
+      <h3>Cursos</h3>
+      <p>Cadastre os cursos que podem ser vinculados aos usuários e suas matrículas.</p>
+      <div class="tl-actions"><a class="tl-btn tl-btn-primary" href="<?= tl_url('views/admin/cursos.php') ?>">Gerenciar</a></div>
+    </article>
+
     <?php $funcao = $_SESSION['usuario']['funcao'] ?? ''; ?>
     <?php if ($funcao === 'Administrador'): ?>
       <article class="tl-card tl-system-card">

@@ -94,6 +94,15 @@ switch ($acao) {
         respostaJSON(true, "Funções encontradas.", $dados);
         break;
 
+    case 'listar_cursos':
+        exigirAdmin($isAdmin);
+
+        $resultado = $conexao->query("SELECT id, nome_curso, descricao FROM cursos ORDER BY nome_curso ASC");
+        $dados = $resultado ? $resultado->fetch_all(MYSQLI_ASSOC) : [];
+
+        respostaJSON(true, "Cursos encontrados.", $dados);
+        break;
+
     case 'listar':
         exigirAdmin($isAdmin);
 
@@ -107,10 +116,13 @@ switch ($acao) {
                 u.sexo,
                 u.email,
                 u.matricula,
+                u.id_curso,
+                c.nome_curso,
                 u.ativo,
                 u.data_cadastro
             FROM usuario u
             INNER JOIN funcao f ON f.id = u.id_funcao
+            LEFT JOIN cursos c ON c.id = u.id_curso
             ORDER BY u.nome ASC, u.sobrenome ASC, u.id ASC
         ";
 
@@ -137,10 +149,13 @@ switch ($acao) {
                 u.sexo,
                 u.email,
                 u.matricula,
+                u.id_curso,
+                c.nome_curso,
                 u.ativo,
                 u.data_cadastro
             FROM usuario u
             INNER JOIN funcao f ON f.id = u.id_funcao
+            LEFT JOIN cursos c ON c.id = u.id_curso
             WHERE u.id = ?
         ";
 
@@ -164,6 +179,7 @@ switch ($acao) {
         $sexo = validarSexo(normalizarTexto($_POST['sexo'] ?? 'Prefiro não informar'));
         $email = normalizarTexto($_POST['email'] ?? '');
         $matricula = valorOuNull($_POST['matricula'] ?? null);
+        $idCurso = normalizarIdCurso($_POST['id_curso'] ?? null);
         $senha = (string)($_POST['senha'] ?? '');
         $idFuncao = intval($_POST['id_funcao'] ?? 0);
         $ativo = intval($_POST['ativo'] ?? 1) === 1 ? 1 : 0;
@@ -196,17 +212,21 @@ switch ($acao) {
             respostaJSON(false, "Matrícula já cadastrada.");
         }
 
+        if (!cursoExiste($conexao, $idCurso)) {
+            respostaJSON(false, "Curso selecionado não existe.");
+        }
+
         $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
 
         $sql = "
             INSERT INTO usuario
-                (id_funcao, nome, sobrenome, sexo, email, matricula, senha_hash, ativo)
+                (id_funcao, nome, sobrenome, sexo, email, matricula, id_curso, senha_hash, ativo)
             VALUES
-                (?, ?, ?, ?, ?, ?, ?, ?)
+                (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ";
 
         $stmt = $conexao->prepare($sql);
-        $stmt->bind_param("issssssi", $idFuncao, $nome, $sobrenome, $sexo, $email, $matricula, $senhaHash, $ativo);
+        $stmt->bind_param("isssssisi", $idFuncao, $nome, $sobrenome, $sexo, $email, $matricula, $idCurso, $senhaHash, $ativo);
         $sucesso = $stmt->execute();
 
         respostaJSON($sucesso, $sucesso ? "Usuário criado." : "Erro ao criar usuário.");
@@ -224,6 +244,7 @@ switch ($acao) {
         $sexo = validarSexo(normalizarTexto($_POST['sexo'] ?? 'Prefiro não informar'));
         $email = normalizarTexto($_POST['email'] ?? '');
         $matricula = valorOuNull($_POST['matricula'] ?? null);
+        $idCurso = normalizarIdCurso($_POST['id_curso'] ?? null);
         $senha = (string)($_POST['senha'] ?? '');
 
         if ($nome === '' || $email === '') {
@@ -254,6 +275,10 @@ switch ($acao) {
             respostaJSON(false, "Matrícula já utilizada.");
         }
 
+        if (!cursoExiste($conexao, $idCurso)) {
+            respostaJSON(false, "Curso selecionado não existe.");
+        }
+
         if ($isAdmin) {
             $idFuncao = intval($_POST['id_funcao'] ?? 0);
             $ativo = intval($_POST['ativo'] ?? 1) === 1 ? 1 : 0;
@@ -266,38 +291,38 @@ switch ($acao) {
                 $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
                 $sql = "
                     UPDATE usuario
-                    SET id_funcao = ?, nome = ?, sobrenome = ?, sexo = ?, email = ?, matricula = ?, senha_hash = ?, ativo = ?
+                    SET id_funcao = ?, nome = ?, sobrenome = ?, sexo = ?, email = ?, matricula = ?, id_curso = ?, senha_hash = ?, ativo = ?
                     WHERE id = ?
                 ";
                 $stmt = $conexao->prepare($sql);
-                $stmt->bind_param("issssssii", $idFuncao, $nome, $sobrenome, $sexo, $email, $matricula, $senhaHash, $ativo, $id);
+                $stmt->bind_param("isssssisii", $idFuncao, $nome, $sobrenome, $sexo, $email, $matricula, $idCurso, $senhaHash, $ativo, $id);
             } else {
                 $sql = "
                     UPDATE usuario
-                    SET id_funcao = ?, nome = ?, sobrenome = ?, sexo = ?, email = ?, matricula = ?, ativo = ?
+                    SET id_funcao = ?, nome = ?, sobrenome = ?, sexo = ?, email = ?, matricula = ?, id_curso = ?, ativo = ?
                     WHERE id = ?
                 ";
                 $stmt = $conexao->prepare($sql);
-                $stmt->bind_param("isssssii", $idFuncao, $nome, $sobrenome, $sexo, $email, $matricula, $ativo, $id);
+                $stmt->bind_param("isssssiii", $idFuncao, $nome, $sobrenome, $sexo, $email, $matricula, $idCurso, $ativo, $id);
             }
         } else {
             if ($senha !== '') {
                 $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
                 $sql = "
                     UPDATE usuario
-                    SET nome = ?, sobrenome = ?, sexo = ?, email = ?, matricula = ?, senha_hash = ?
+                    SET nome = ?, sobrenome = ?, sexo = ?, email = ?, matricula = ?, id_curso = ?, senha_hash = ?
                     WHERE id = ?
                 ";
                 $stmt = $conexao->prepare($sql);
-                $stmt->bind_param("ssssssi", $nome, $sobrenome, $sexo, $email, $matricula, $senhaHash, $id);
+                $stmt->bind_param("sssssisi", $nome, $sobrenome, $sexo, $email, $matricula, $idCurso, $senhaHash, $id);
             } else {
                 $sql = "
                     UPDATE usuario
-                    SET nome = ?, sobrenome = ?, sexo = ?, email = ?, matricula = ?
+                    SET nome = ?, sobrenome = ?, sexo = ?, email = ?, matricula = ?, id_curso = ?
                     WHERE id = ?
                 ";
                 $stmt = $conexao->prepare($sql);
-                $stmt->bind_param("sssssi", $nome, $sobrenome, $sexo, $email, $matricula, $id);
+                $stmt->bind_param("sssssii", $nome, $sobrenome, $sexo, $email, $matricula, $idCurso, $id);
             }
         }
 
@@ -309,6 +334,8 @@ switch ($acao) {
             $_SESSION['usuario']['sexo'] = $sexo;
             $_SESSION['usuario']['email'] = $email;
             $_SESSION['usuario']['matricula'] = $matricula;
+            $_SESSION['usuario']['id_curso'] = $idCurso;
+
             if ($isAdmin) {
                 $_SESSION['usuario']['id_funcao'] = $idFuncao;
                 $_SESSION['usuario']['ativo'] = $ativo;
