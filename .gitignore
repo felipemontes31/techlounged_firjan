@@ -1,2 +1,3 @@
-config/
+config/app.php
+config/conexao.php
 .backup/
