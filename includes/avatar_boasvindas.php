@@ -1,4 +1,11 @@
 <?php
+require_once(__DIR__ . '/../config/app.php');
+
+if (!function_exists('tl_url')) {
+    function tl_url($caminho) {
+        return BASE_URL . '/' . ltrim($caminho, '/');
+    }
+}
 /**
  * ==========================================================
  * TECHLOUNGED - AVATAR INTELIGENTE
@@ -135,7 +142,6 @@ if (!defined('AVATAR_WELCOME_INCLUDED')) {
     }
 
 ?>
-
 <!-- ==========================================================
 AVATAR
 ========================================================== -->
@@ -157,7 +163,12 @@ AVATAR
         <div class="tl-avatar-header">
 
             <div class="tl-avatar-icon">
-                🤖
+            <lottie-player src="<?= tl_url('imagem/bot-ola.json') ?>" 
+                background="transparent"  
+                speed="1.5"  
+                style="width: 140px; height: auto; transform: scale(1); flex-shrink: 0;" 
+                loop autoplay>
+            </lottie-player>
             </div>
 
             <div>
@@ -206,14 +217,20 @@ AVATAR
             1
         </div>
 
-        <div class="tl-avatar-face">
-            🤖
+        <div class="tl-avatar-icon">
+            <lottie-player src="<?= tl_url('imagem/bot-ola.json') ?>" 
+                background="transparent"  
+                speed="1.5"  
+                style="width: 110px; height: auto; transform: scale(1); flex-shrink: 0;" 
+                loop autoplay>
+            </lottie-player>
         </div>
 
-    </div>
 
+    </div>
 </div>
 
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 <!-- ==========================================================
 CSS
 ========================================================== -->

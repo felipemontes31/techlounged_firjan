@@ -15,11 +15,16 @@ require_once(__DIR__ . '/../config/app.php'); if (session_status() === PHP_SESSI
 <?php include(__DIR__ . '/../includes/avatar_boasvindas.php'); ?>
 
 
+<lottie-player src="<?= tl_url('imagem/pessoa-lendo.json') ?>" 
+    background="transparent"  
+    speed="1"  
+    style="width: 500px; height: auto; transform: translate(-50%, -50%) scale(1); flex-shrink: 0; mix-blend-mode: multiply; position: fixed; top: 50%; left: 50%; z-index: -1;" 
+    loop autoplay>
+</lottie-player>
 <main>
   <section class="tl-hero">
     <div class="tl-container tl-hero-grid">
-      <div>
-        <span class="tl-kicker">Agenda da Biblioteca</span>
+      <div class="tl-card tl-card-pad">
         <h1>Eventos, oficinas e experiências da biblioteca em um só lugar.</h1>
         <p>Consulte a programação pública, reserve sua participação e acompanhe suas inscrições no estilo de uma plataforma de ingressos.</p>
         <div class="tl-actions">
