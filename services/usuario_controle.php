@@ -5,6 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once(__DIR__ . "/../config/conexao.php");
+require_once(__DIR__ . "/../models/usuario.php");
 require_once(__DIR__ . "/../utils/json.php");
 
 $acao = $_GET['acao'] ?? '';
@@ -336,6 +337,42 @@ switch ($acao) {
         $sucesso = $stmt->execute();
 
         respostaJSON($sucesso, $sucesso ? "Usuário inativado." : "Erro ao inativar usuário.");
+        break;
+
+    case 'alterar_senha':
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $idUsuarioLogado = $_SESSION['usuario']['id'] ?? null;
+
+        if (!$idUsuarioLogado) {
+            respostaJSON(false, "Sua sessão expirou. Por favor, faça login novamente.");
+        }
+
+        $senhaAtual   = $_POST['senha_atual'] ?? '';
+        $novaSenha    = $_POST['nova_senha'] ?? '';
+        $confirmar    = $_POST['confirmar_senha'] ?? '';
+
+        // Validações de segurança no Back-end
+        if (empty($senhaAtual) || empty($novaSenha)) {
+            respostaJSON(false, "Todos os campos de senha são obrigatórios.");
+        }
+
+        if (strlen($novaSenha) < 6) {
+            respostaJSON(false, "A nova senha precisa ter no mínimo 6 caracteres.");
+        }
+
+        if ($novaSenha !== $confirmar) {
+            respostaJSON(false, "A nova senha e a confirmação não conferem.");
+        }
+
+        // Instancia a Model de Usuário (certifique-se de dar o include na classe Usuario)
+        $modelUsuario = new Usuario($conexao);
+        
+        $resultado = $modelUsuario->atualizarSenha($idUsuarioLogado, $senhaAtual, $novaSenha);
+
+        respostaJSON($resultado['sucesso'], $resultado['mensagem']);
         break;
 
     default:

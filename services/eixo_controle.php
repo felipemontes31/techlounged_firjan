@@ -1,7 +1,7 @@
 <?php
 
 require_once(__DIR__ . "/../config/conexao.php");
-//require_once(__DIR__ . "/../middleware/permissao.php");
+require_once(__DIR__ . "/../middleware/permissao.php");
 require_once(__DIR__ . "/../utils/json.php");
 require_once(__DIR__ . "/../utils/response.php");
 require_once(__DIR__ . "/../models/Eixo.php");

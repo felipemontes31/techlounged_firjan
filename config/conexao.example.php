@@ -5,22 +5,12 @@ $usuario = "root";
 $senha = "";
 $banco = "techlounged";
 
-try {
+$conexao = new mysqli($host, $usuario, $senha, $banco);
 
-    $conexao = new PDO(
-        "mysql:host=$host;dbname=$banco;charset=utf8mb4",
-        $usuario,
-        $senha
-    );
-
-    $conexao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    $conexao->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
-} catch (PDOException $e) {
-
-    die("Erro de conexão: " . $e->getMessage());
-
+if ($conexao->connect_error) {
+    die("Erro de conexão: " . $conexao->connect_error);
 }
+
+$conexao->set_charset("utf8mb4");
 
 ?>

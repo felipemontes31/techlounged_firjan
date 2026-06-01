@@ -213,6 +213,39 @@ class Usuario
 
         return $stmt->get_result()->num_rows > 0;
     }
+
+    public function atualizarSenha($id, $senhaAtual, $novaSenha)
+    {
+        // 1. Busca a senha criptografada atual armazenada no banco
+        $sql = "SELECT senha_hash FROM usuario WHERE id = ?";
+        $stmt = $this->conexao->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $usuario = $stmt->get_result()->fetch_assoc();
+
+        if (!$usuario) {
+            return ['sucesso' => false, 'mensagem' => 'Usuário não encontrado.'];
+        }
+
+        // 2. Compara a senha digitada com o hash do banco de dados
+        if (!password_verify($senhaAtual, $usuario['senha_hash'])) {
+            return ['sucesso' => false, 'mensagem' => 'A senha atual informada está incorreta.'];
+        }
+
+        // 3. Gera o novo hash seguro para a nova senha
+        $novoHash = password_hash($novaSenha, PASSWORD_DEFAULT);
+
+        // 4. Salva a nova senha no banco de dados
+        $sqlUpdate = "UPDATE usuario SET senha_hash = ? WHERE id = ?";
+        $stmtUpdate = $this->conexao->prepare($sqlUpdate);
+        $stmtUpdate->bind_param("si", $novoHash, $id);
+
+        if ($stmtUpdate->execute()) {
+            return ['sucesso' => true, 'mensagem' => 'Sua senha foi alterada com sucesso!'];
+        }
+
+        return ['sucesso' => false, 'mensagem' => 'Erro interno ao tentar salvar a nova senha.'];
+    }
 }
 
 ?>

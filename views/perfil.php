@@ -37,8 +37,71 @@ $u = $_SESSION['usuario'];
       </form>
       
     </section>
+
+    <section class="tl-card tl-card-pad">
+    <h2 style="color:var(--azul-institucional); margin-top:0;">Alterar Senha de Acesso</h2>
+      <form class="tl-form-grid" id="formAlterarSenha">
+          <div class="tl-field">
+              <label>Senha Atual *</label>
+              <input type="password" name="senha_atual" required>
+          </div>
+          
+          <div class="tl-field">
+              <label >Nova Senha *</label>
+              <input type="password" id="nova_senha" name="nova_senha" required placeholder="Mínimo 6 caracteres">
+          </div>
+
+          <div class="tl-field">
+              <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Confirmar Nova Senha *</label>
+              <input type="password" id="confirmar_senha" name="confirmar_senha" required >
+          </div>
+          
+          <div class="tl-actions tl-full">
+            <button type="submit" class= "tl-btn tl-btn-primary">
+                Atualizar Senha
+            </button>
+          </div>
+      </form>
+    </section>
   </div>
+
 </main>
 <script src="<?= tl_url('assets/js/techlounged.js') ?>"></script>
+
+<script>
+document.getElementById('formAlterarSenha').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const novaSenha = document.getElementById('nova_senha').value;
+    const confirmarSenha = document.getElementById('confirmar_senha').value;
+
+    // Validação básica no Front-end
+    if (novaSenha.length < 6) {
+        alert("A nova senha deve conter pelo menos 6 caracteres.");
+        return;
+    }
+
+    if (novaSenha !== confirmarSenha) {
+        alert("A nova senha e a confirmação não coincidem.");
+        return;
+    }
+
+    const formData = new FormData(this);
+
+    // Ajuste o caminho para a sua controller de Usuário/Perfil correspondente
+    fetch('../services/usuario_controle.php?acao=alterar_senha', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(res => {
+        alert(res.mensagem);
+        if (res.sucesso) {
+            this.reset(); // Limpa os campos de senha se der certo
+        }
+    })
+    .catch(err => console.error("Erro na requisição:", err));
+});
+</script>
 </body>
 </html>
