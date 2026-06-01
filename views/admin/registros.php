@@ -116,12 +116,12 @@ require_once(__DIR__ . '/../../config/app.php');
       <table class="tl-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Atividade</th>
             <th>Tema</th>
+            <th>Atividade</th>
             <th>Espaço</th>
             <th>Data</th>
             <th>Status</th>
+            <th>Publico Previsto</th>
             <th>Vagas</th>
             <th>Ações</th>
           </tr>
@@ -171,6 +171,18 @@ function carregarSelectsAuxiliares() {
     });
 }
 
+function calcularVagasDisponiveis(item) {
+  const capacidade = parseInt(item.capacidade_maxima || item.publico_previsto || 0);
+  const confirmados = parseInt(item.total_confirmados || 0);
+
+  if (!capacidade || capacidade <= 0) {
+    return 'A definir';
+  }
+
+  const disponiveis = capacidade - confirmados;
+  return Math.max(disponiveis, 0);
+}
+
 function listarRegistros() {
   const corpo = document.getElementById('tabelaRegistros');
   corpo.innerHTML = '<tr><td colspan="8">Carregando registros...</td></tr>';
@@ -188,13 +200,16 @@ function listarRegistros() {
       res.dados.forEach(item => {
         corpo.innerHTML += `
           <tr>
-            <td>${tlTextoSeguro(item.id)}</td>
-            <td><strong>${tlTextoSeguro(item.nome_projeto)}</strong></td>
-            <td>${tlTextoSeguro(item.tema_especifico || 'Geral')}</td>
+            <td><strong>${tlTextoSeguro(item.tema_especifico || 'Geral')}</strong></td>
+            <td>${tlTextoSeguro(item.nome_projeto)}</td>
             <td>${tlTextoSeguro(item.nome_espaco || 'Não informado')}</td>
             <td>${tlDataBR(item.data_execucao)}</td>
             <td><span class="tl-badge">${tlTextoSeguro(item.status || 'Planejado')}</span></td>
-            <td>${tlTextoSeguro(item.publico_previsto || item.capacidade_maxima || 'A definir')}</td>
+            <td>${tlTextoSeguro(item.publico_previsto ||  'A definir')}</td>
+            <td>
+              <strong>${calcularVagasDisponiveis(item)}</strong>
+              <small class="tl-meta" style="display:block;">Confirmados: ${parseInt(item.total_confirmados || 0)}</small>
+            </td>
             <td>
               <div class="tl-row-actions">
                 <button class="tl-btn tl-btn-secondary tl-btn-small" type="button" onclick="editarRegistro(${parseInt(item.id)})">Editar</button>
