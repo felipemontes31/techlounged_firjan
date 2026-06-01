@@ -79,11 +79,27 @@ function carregarMinhasInscricoes() {
           ? `<button class="tl-btn tl-btn-outline-danger" type="button" onclick="desinscrever(${idInscricao})">Cancelar inscrição</button>`
           : `<button class="tl-btn tl-btn-disabled" type="button" disabled>Cancelamento indisponível</button>`;
 
+        // Declarar e processar a lógica do botão da agenda ANTES do wrap de botões
+        let botaoAgenda = '';
+
+        if (item.status_inscricao === 'Confirmado') {
+            // Passar o "item" completo para a função ter acesso aos dados (nome_projeto, data, etc.)
+            const urlGoogleAgenda = gerarLinkGoogleAgenda(item);
+            
+            botaoAgenda = `
+                <a href="${urlGoogleAgenda}" target="_blank" rel="noopener noreferrer" 
+                  class="tl-btn tl-btn-primary">
+                  📅 Marcar na Agenda
+                </a>
+            `;
+        }
+
         const botoesAcao = `
           <div class="tl-actions-wrap">
             ${botaoConfirmar}
             ${botaoInteresse}
             ${botaoDesinscrever}
+            ${botaoAgenda}
           </div>
         `;
 
@@ -148,6 +164,32 @@ function desinscrever(idInscricao) {
       if (res.sucesso) carregarMinhasInscricoes();
     })
     .catch(() => alert('Erro de comunicação ao cancelar inscrição.'));
+}
+
+function gerarLinkGoogleAgenda(evento) {
+    const baseUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE";
+    
+    // 1. Define o título do evento
+    const titulo = encodeURIComponent(`[TechLounge] ${evento.nome_projeto} - ${evento.tema_especifico || ''}`);
+    
+    // 2. Define a descrição/detalhes
+    const detalhes = encodeURIComponent(`Sua inscrição está confirmada!\nLocal: ${evento.nome_espaco}\nStatus: ${evento.status_inscricao}`);
+    
+    // 3. Define o local (Espaço Físico)
+    const local = encodeURIComponent(evento.nome_espaco);
+    
+    // 4. Formatação de data para o padrão do Google (YYYYMMDDTHHMMSS)
+    // Se o seu banco guarda apenas a data (Ex: 2026-06-15), definimos um horário padrão (ex: das 14:00 às 16:00)
+    // Se guardar data e hora juntas, basta extrair e limpar os traços e dois-pontos.
+    
+    const dataLimpa = evento.data_execucao.replace(/-/g, ''); // Transforma 2026-06-15 em 20260615
+    const dataInicio = `${dataLimpa}T140000`; // Exemplo: Início às 14:00
+    const dataFim = `${dataLimpa}T160000`;    // Exemplo: Término às 16:00
+    
+    const datas = `${dataInicio}/${dataFim}`;
+
+    // Monta a URL final
+    return `${baseUrl}&text=${titulo}&dates=${datas}&details=${detalhes}&location=${local}`;
 }
 </script>
 </body>
