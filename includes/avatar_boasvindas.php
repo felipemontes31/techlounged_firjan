@@ -346,6 +346,13 @@ HEADER
     font-size:28px;
 
 }
+/* Ocultação suave do avatar */
+.tl-hidden{
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(20px) scale(0.8);
+    transition: all 0.5s ease;
+}
 
 /* ==========================================================
 MENSAGEM
@@ -482,58 +489,100 @@ RESPONSIVO
 <!-- ==========================================================
 JAVASCRIPT
 ========================================================== -->
-
 <script>
 
 document.addEventListener('DOMContentLoaded', function(){
 
+    const avatarContainer = document.getElementById('tl-avatar-container');
     const avatarButton = document.getElementById('tl-avatar-button');
-
     const chatbox = document.getElementById('tl-chatbox');
-
     const closeButton = document.getElementById('tl-close-avatar');
-
     const notification = document.getElementById('tl-avatar-notification');
 
-    // ======================================================
-    // ABERTURA AUTOMÁTICA
-    // ======================================================
+    // Tempo de exibição
+    const TEMPO_ABRIR = 1500;   // 1,5 segundos
+    const TEMPO_FECHAR = 15000; // 15 segundos
+    const TEMPO_SUMIR = 20000;  // 20 segundos
 
-    setTimeout(() => {
+    // Controle diário
+    const hoje = new Date().toLocaleDateString();
 
+    if(localStorage.getItem('tl_avatar_data') !== hoje){
+
+        localStorage.removeItem('tl_avatar_interagiu');
+        localStorage.removeItem('tl_avatar_ocultado');
+
+        localStorage.setItem('tl_avatar_data', hoje);
+    }
+
+    // Se já foi exibido hoje, não mostra novamente
+    if(
+        localStorage.getItem('tl_avatar_interagiu') === 'sim' ||
+        localStorage.getItem('tl_avatar_ocultado') === 'sim'
+    ){
+        avatarContainer.style.display = 'none';
+        return;
+    }
+
+    // Abre automaticamente
+    setTimeout(function(){
         chatbox.style.display = 'block';
+    }, TEMPO_ABRIR);
 
-    }, 1500);
+    // Fecha automaticamente
+    setTimeout(function(){
+        chatbox.style.display = 'none';
+    }, TEMPO_FECHAR);
 
-    // ======================================================
-    // ABRIR / FECHAR CHAT
-    // ======================================================
+    // Esconde completamente
+    setTimeout(function(){
 
+        avatarContainer.classList.add('tl-hidden');
+
+        localStorage.setItem(
+            'tl_avatar_ocultado',
+            'sim'
+        );
+
+        setTimeout(function(){
+            avatarContainer.style.display = 'none';
+        }, 500);
+
+    }, TEMPO_SUMIR);
+
+    // Clique no avatar
     avatarButton.addEventListener('click', function(){
+
+        localStorage.setItem(
+            'tl_avatar_interagiu',
+            'sim'
+        );
 
         if(chatbox.style.display === 'block'){
 
             chatbox.style.display = 'none';
 
-        }
-
-        else{
+        } else {
 
             chatbox.style.display = 'block';
 
-            notification.style.display = 'none';
+            if(notification){
+                notification.style.display = 'none';
+            }
 
         }
 
     });
 
-    // ======================================================
-    // FECHAR
-    // ======================================================
-
+    // Botão X
     closeButton.addEventListener('click', function(){
 
         chatbox.style.display = 'none';
+
+        localStorage.setItem(
+            'tl_avatar_interagiu',
+            'sim'
+        );
 
     });
 
