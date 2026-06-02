@@ -19,24 +19,22 @@ if (empty($email) || empty($senha)) {
 }
 
 $sql = "
-SELECT
-    u.id,
-    u.nome,
-    u.sobrenome,
-    u.email,
-    u.senha_hash,
-    u.ativo,
-    u.matricula,
-    u.sexo,
-    f.nome_funcao
-
-FROM usuario u
-
-INNER JOIN funcao f
-ON u.id_funcao = f.id
-
-WHERE u.email = ?
-LIMIT 1
+    SELECT
+        u.id,
+        u.id_funcao,
+        u.nome,
+        u.sobrenome,
+        u.email,
+        u.matricula,
+        u.sexo,
+        u.id_curso,
+        u.senha_hash,
+        u.ativo,
+        f.nome_funcao AS funcao
+    FROM usuario u
+    INNER JOIN funcao f ON f.id = u.id_funcao
+    WHERE u.email = ?
+    LIMIT 1
 ";
 
 $stmt = $conexao->prepare($sql);
@@ -75,15 +73,15 @@ if (!password_verify($senha, $usuario['senha_hash'])) {
 
 
 $_SESSION['usuario'] = [
-
-    "id" => $usuario['id'],
-    "nome" => $usuario['nome'],
-    "sobrenome" => $usuario['sobrenome'],
-    "email" => $usuario['email'],
-    "funcao" => $usuario['nome_funcao'],
-    "matricula" => $usuario['matricula'],
-    "sexo" => $usuario['sexo']
-
+    "id" => $usuario["id"],
+    "id_funcao" => $usuario["id_funcao"],
+    "funcao" => $usuario["funcao"],
+    "nome" => $usuario["nome"],
+    "sobrenome" => $usuario["sobrenome"] ?? "",
+    "email" => $usuario["email"],
+    "matricula" => $usuario["matricula"] ?? "",
+    "sexo" => $usuario["sexo"] ?? "Prefiro não informar",
+    "id_curso" => $usuario["id_curso"] ?? null
 ];
 
 redirecionarPagina(

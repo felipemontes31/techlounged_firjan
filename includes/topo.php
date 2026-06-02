@@ -3,8 +3,24 @@ require_once(__DIR__ . '/../config/app.php');
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 $usuarioLogado = $_SESSION['usuario'] ?? null;
-$funcaoUsuario = $usuarioLogado['funcao'] ?? $usuarioLogado['nome_funcao'] ?? null;
-$idFuncao = $usuarioLogado['id_funcao'] ?? null;
+$nomeUsuario = $usuarioLogado['nome'] ?? 'Visitante';
+$sobrenomeUsuario = $usuarioLogado['sobrenome'] ?? '';
+
+$funcaoBruta = $usuarioLogado['funcao'] 
+    ?? $usuarioLogado['id_funcao'] 
+    ?? 'Visitante';
+
+$funcaoUsuario = normalizarFuncaoUsuario($funcaoBruta);
+
+$iniciais = mb_strtoupper(
+    mb_substr($nomeUsuario, 0, 1) .
+    mb_substr($sobrenomeUsuario, 0, 1),
+    "UTF-8"
+);
+
+if (trim($iniciais) === "") {
+    $iniciais = "TL";
+}
 
 if (!function_exists('tl_usuario_eh_admin')) {
     function tl_usuario_eh_admin() {
@@ -24,6 +40,36 @@ if (!function_exists('tl_url')) {
     function tl_url($caminho) {
         return BASE_URL . '/' . ltrim($caminho, '/');
     }
+}
+
+function normalizarFuncaoUsuario($funcao)
+{
+    $funcao = trim((string) $funcao);
+
+    $mapa = [
+        "1" => "Administrador",
+        "2" => "Bibliotecário",
+        "3" => "Usuário",
+
+        "admin" => "Administrador",
+        "administrador" => "Administrador",
+
+        "bibliotecario" => "Bibliotecário",
+        "bibliotecário" => "Bibliotecário",
+
+        "usuario" => "Usuário",
+        "usuário" => "Usuário",
+        "comum" => "Usuário"
+    ];
+
+    $chave = mb_strtolower($funcao, "UTF-8");
+    $chave = str_replace(
+        ["á", "à", "ã", "â", "é", "ê", "í", "ó", "ô", "õ", "ú", "ç"],
+        ["a", "a", "a", "a", "e", "e", "i", "o", "o", "o", "u", "c"],
+        $chave
+    );
+
+    return $mapa[$chave] ?? $funcao;
 }
 ?>
 <header class="tl-header">
